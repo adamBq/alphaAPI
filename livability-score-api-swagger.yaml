@@ -1,0 +1,178 @@
+openapi: 3.0.0
+info:
+  title: Livability Score API
+  description: >
+    The Livability Score API aggregates statistics based on a provided address or suburb
+    and weighted inputs for crime, weather (disaster risks), access to public transportation,
+    shopping centers, and family demographics. The API calculates an overall livability score
+    and returns a detailed breakdown for each category.
+  version: "1.0.0"
+servers:
+  - url: https://api.yourdomain.com/v1
+paths:
+  /livability:
+    post:
+      summary: Calculate Livability Score
+      description: >
+        Calculate the overall livability score for a given address or suburb by providing
+        the importance weights for the following factors: crime, weather, public transportation,
+        shopping centers, and family demographics. The response includes an overall score along
+        with a detailed breakdown per factor.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                address:
+                  type: string
+                  description: "Full address or suburb name to calculate livability."
+                  example: "123 Main St, Anytown"
+                weights:
+                  type: object
+                  description: "Importance weights for various livability factors (values between 0 and 1)."
+                  properties:
+                    crime:
+                      type: number
+                      description: "Weight for crime statistics."
+                      example: 0.8
+                    weather:
+                      type: number
+                      description: "Weight for weather/disaster risks."
+                      example: 0.7
+                    public_transportation:
+                      type: number
+                      description: "Weight for access to public transportation."
+                      example: 0.6
+                    shopping:
+                      type: number
+                      description: "Weight for access to shopping centers."
+                      example: 0.5
+                    family_demographics:
+                      type: number
+                      description: "Weight for family demographics suitability."
+                      example: 0.9
+              required:
+                - address
+                - weights
+      responses:
+        '200':
+          description: Livability score successfully calculated.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  overall_score:
+                    type: number
+                    description: "Aggregated livability score based on provided inputs."
+                    example: 75.3
+                  breakdown:
+                    type: object
+                    description: "Detailed score breakdown for each factor."
+                    properties:
+                      crime:
+                        type: number
+                        description: "Score for crime statistics."
+                        example: 70
+                      weather:
+                        type: number
+                        description: "Score for weather/disaster risk."
+                        example: 80
+                      public_transportation:
+                        type: number
+                        description: "Score for public transportation access."
+                        example: 65
+                      shopping:
+                        type: number
+                        description: "Score for shopping center access."
+                        example: 60
+                      family_demographics:
+                        type: number
+                        description: "Score for family demographics suitability."
+                        example: 85
+        '400':
+          description: Invalid input parameters.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: "Error message describing the invalid input."
+        '500':
+          description: Internal server error.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: "Error message describing the server error."
+                    
+  /health:
+    get:
+      summary: Health Check
+      description: "Returns a simple status to verify that the API is running."
+      responses:
+        '200':
+          description: API is healthy.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: "ok"
+components:
+  schemas:
+    LivabilityRequest:
+      type: object
+      properties:
+        address:
+          type: string
+          description: "The full address or suburb name."
+        weights:
+          type: object
+          properties:
+            crime:
+              type: number
+              description: "Importance weight for crime statistics (0-1)."
+            weather:
+              type: number
+              description: "Importance weight for weather/disaster risks (0-1)."
+            public_transportation:
+              type: number
+              description: "Importance weight for public transportation (0-1)."
+            shopping:
+              type: number
+              description: "Importance weight for shopping centers (0-1)."
+            family_demographics:
+              type: number
+              description: "Importance weight for family demographics (0-1)."
+      required:
+        - address
+        - weights
+    LivabilityResponse:
+      type: object
+      properties:
+        overall_score:
+          type: number
+          description: "The calculated overall livability score."
+        breakdown:
+          type: object
+          properties:
+            crime:
+              type: number
+            weather:
+              type: number
+            public_transportation:
+              type: number
+            shopping:
+              type: number
+            family_demographics:
+              type: number
