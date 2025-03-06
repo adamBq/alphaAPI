@@ -31,7 +31,7 @@ paths:
   /data/suburb/{name}:
     get:
       summary: Retrieve extreme weather trends for a given suburb
-      description: Returns disaster occurrence data, a livability score, and relevant natural disasters for the requested suburb.
+      description: Returns disaster occurrence data and relevant natural disasters for the requested suburb.
       operationId: getSuburbData
       parameters:
         - name: name
@@ -52,10 +52,6 @@ paths:
                   suburb:
                     type: string
                     example: "Gunnedah"
-                  score:
-                    type: number
-                    format: float
-                    example: 3.27
                   occurrences:
                     type: integer
                     example: 3
@@ -67,7 +63,24 @@ paths:
                       - "NSW Flooding from 14 September 2022 onwards"
                       - "Southern and Central West NSW Flooding from 4 August 2022 onwards"
                       - "NSW severe weather and flooding 9 November 2021 onwards"
-        "404":
-          description: Suburb not found
+
+        "200 (Suburb Not Found)":
+          description: Suburb not found in the dataset, returning an empty schema.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  suburb:
+                    type: string
+                    example: ""
+                  occurrences:
+                    type: integer
+                    example: 0
+                  disaster_names:
+                    type: array
+                    items:
+                      type: string
+                    example: []
         "500":
           description: Internal server error
