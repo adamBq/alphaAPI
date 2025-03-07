@@ -99,7 +99,7 @@ paths:
   /crime/trends/{suburb}:
     get:
       summary: Retrieve crime trends for a given suburb
-      description: Returns historical crime trends over the last 10 years.
+      description: Returns historical crime trends over the last 10 years for a given suburb.
       operationId: getCrimeTrends
       parameters:
         - name: suburb
@@ -108,61 +108,58 @@ paths:
           description: Name of the suburb (case-insensitive)
           schema:
             type: string
-            example: "Kensington"
-        responses:
-          "200":
-            description: Crime trends for the requested suburb
-            contenet:
-              application/json:
-                schema:
-                  type: object
-                  properties:
-                    suburb:
-                      type: string
-                      example: "Kenington"
-                    crime:
+            example: "Wollongong"
+      responses:
+        "200":
+          description: Crime trends for the requested suburb
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  suburb:
+                    type: string
+                    example: "Wollongong"
+                  crime:
+                    type: object
+                    additionalProperties:
                       type: object
-                      additionalProperties:
-                        type: object
-                        properties:
-                          SubCrimeType:
+                      properties:
+                        name:
+                          type: string
+                          example: "Theft"
+                        subCrimeType:
+                          type: object
+                          additionalProperties:
                             type: object
-                            additionalProperties:
-                              type: object
-                              properties:
-                                trendSlope:
-                                  type: number
-                                  example: -0.5
-                                trendPercentage:
-                                  type: number
-                                  example: -12.5
-                                movingAvg:
-                                  type: number
-                                  example: 45
-                                trendCategory:
-                                  type: string
-                                  example: "Decreasing"
-          "404":
-            description: Suburb not found in the dataset.
-            content:
-              application/json:
-                schema:
-                  type: object
-                  properties:
-                    suburb:
-                      type: string
-                      example: ""
-                    crime:
-                      type: object
-                      example: {}
-          "500":
-            description: Internal server error
-
-
-
-
-
-
-
-
-
+                            properties:
+                              name:
+                                type: string
+                                example: "Vehicle Theft"
+                              trendSlope:
+                                type: number
+                                example: -0.5
+                              trendPercentage:
+                                type: number
+                                example: -12.5
+                              movingAvg:
+                                type: number
+                                example: 45
+                              trendCategory:
+                                type: string
+                                example: "Decreasing"
+        "404":
+          description: Suburb not found in the dataset.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  suburb:
+                    type: string
+                    example: ""
+                  crime:
+                    type: object
+                    example: {}
+        "500":
+          description: Internal server error
