@@ -1,0 +1,142 @@
+openapi: 3.0.0
+info:
+  title: Family Census Data API
+  description: API for retrieving family composition and population data for a given suburb.
+  version: 1.0.0
+
+servers:
+  -  url: https://api.yourdomain.com
+     description: Production Server
+
+paths:
+  /data/update:
+    post:
+      summary: Trigger an update by making a request to the ABS API
+      description: This endpoint triggers a request to the ABS API to fetch the latest census data and update the database.
+      responses:
+        200:
+          description: Successfully requested data from ABS API
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+              example:
+                message: "ABS API update triggered successfully"
+        500:
+          description: Failed to fetch data from ABS API
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: "Failed to retrieve data from ABS API"
+
+  /data/family/{address}:
+    get:
+      summary: Get family composition data for a given address
+      parameters:
+        - name: address
+          in: path
+          required: true
+          schema:
+            type: string
+          description: The address (suburb) for which family composition data is requested.
+      responses:
+        200:
+          description: Successful response with family composition data
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  suburb:
+                    type: string
+                  total_families:
+                    type: string
+                  couple_family_with_no_children:
+                    type: string
+                  couple_family_with_children_under_15:
+                    type: string
+                  couple_family_with_children_over_15:
+                    type: string
+                  total_couple_families:
+                    type: string
+                  one_parent_with_children_under_15:
+                    type: string
+                  one_parent_with_children_over_15:
+                    type: string
+                  total_one_parent_families:
+                    type: string
+                  other_family:
+                    type: string
+              example:
+                suburb: "Strathfield"
+                total_families: "11,545"
+                couple_family_with_no_children: "4,258"
+                couple_family_with_children_under_15: "3,573"
+                couple_family_with_children_over_15: "1,953"
+                total_couple_families: "5,528"
+                one_parent_with_children_under_15: "469"
+                one_parent_with_children_over_15: "931"
+                total_one_parent_families: "1,399"
+                other_family: "360"
+        404:
+          description: Address not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: "Address not found"
+
+  /data/population/{suburb}:
+    get:
+      summary: Get population data for a given suburb
+      parameters:
+        - name: suburb
+          in: path
+          required: true
+          schema:
+            type: string
+          description: The suburb for which population data is requested.
+      responses:
+        200:
+          description: Successful response with population data
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  suburb:
+                    type: string
+                  total_population:
+                    type: string
+                  male:
+                    type: string
+                  female:
+                    type: string
+              example:
+                suburb: "Strathfield"
+                total_population: "45,593"
+                male: "23,365"
+                female: "22,229"
+        404:
+          description: Suburb not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: "Suburb not found"
