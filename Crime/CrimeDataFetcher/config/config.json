@@ -1,0 +1,6 @@
+{
+    "CRIME_DATA_URL" : "https://bocsarblob.blob.core.windows.net/bocsar-open-data/SuburbData.zip",
+    "S3_BUCKET_NAME" : "crimedataraw",
+    "SQS_QUEUE_URL" : "https://sqs.us-east-1.amazonaws.com/216989131264/CrimeDataProcessingQueue",
+    "BATCH_SIZE" : 10 
+ }
