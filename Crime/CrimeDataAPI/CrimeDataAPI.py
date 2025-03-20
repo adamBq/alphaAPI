@@ -1,9 +1,26 @@
 import json
 import boto3
-from util.config import config
 
 dynamodb = boto3.resource("dynamodb")
-table = dynamodb.Table(config.get("DYNAMODB_TABLE_NAME"))
+table = dynamodb.Table("CrimeData")
+
+def filter_summary_data(data):
+    """
+    Removes per-year and per-month breakdown if detailed=False
+    """
+    try:
+        crime_summary = json.loads(data["crimeSummary"])
+
+        for crime_type in crime_summary:
+            for sub_crime in crime_summary[crime_type]:
+                if isinstance(crime_summary[crime_type][sub_crime], dict):
+                    crime_summary[crime_type][sub_crime] = {"totalNum" : crime_summary[crime_type][sub_crime]["totalNum"]}
+        
+        data["crimeSummary"] = json.dumps(crime_summary)
+        return data
+    except Exception as e:
+        print(f"Error filtering summary data: {e}")
+        return data
 
 def lambda_handler(event, context):
     """
@@ -12,6 +29,7 @@ def lambda_handler(event, context):
     try:
         query_params = event.get("queryStringParameters", {})
         suburb = query_params.get("suburb")
+        detailed = query_params.get("detailed", "true").lower() == "true"
 
         if not suburb:
             return {

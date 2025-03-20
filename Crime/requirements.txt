@@ -1,0 +1,5 @@
+pytest
+moto
+boto3
+pandas
+numpy

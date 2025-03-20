@@ -2,15 +2,14 @@ import json
 import boto3
 import pandas as pd
 import numpy as np
-from util.config import config
 
 s3 = boto3.client("s3")
 dynamodb = boto3.resource("dynamodb")
 sqs = boto3.client("sqs")
 
-s3_bucket_name = config.get("S3_BUCKET_NAME")
-dynamodb_table_name = config.get("DYNAMODB_TABLE_NAME")
-dlq_url = config.get("DLQ_URL")
+s3_bucket_name = "crimedataraw"
+dynamodb_table_name = "CrimeData"
+dlq_url = "https://sqs.us-east-1.amazonaws.com/216989131264/CrimeDataProcessingDLQ"
 
 table = dynamodb.Table(dynamodb_table_name)
 
