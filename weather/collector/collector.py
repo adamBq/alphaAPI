@@ -1,100 +1,113 @@
-import asyncio
 import json
-import hashlib
 import os
-from collections import defaultdict
-from playwright.async_api import async_playwright
 import boto3
+import requests
+from bs4 import BeautifulSoup
+from collections import defaultdict
 
-import logging
-logger = logging.getLogger()
-logger.setLevel(logging.INFO)
+def lambda_handler(event, context):
+    """
+    Example container-based Lambda that:
+      1) Reads historical JSON data from S3.
+      2) Scrapes FY 2024-25 data from a website.
+      3) Aggregates by suburb.
+      4) Writes the aggregated output back to S3.
 
-# Environment variables
-BUCKET_NAME = os.environ.get('S3_BUCKET', 'my-default-bucket')
+    Expects environment variables:
+      - S3_BUCKET: Name of the S3 bucket
+      - HISTORICAL_KEY: S3 key for the historical JSON
+      - OUTPUT_KEY: S3 key for the output JSON
+      - LIVE_URL: The URL to scrape for 2024-25 data
+    """
 
-# S3 object keys
-HISTORICAL_KEY = "fy18-19_to_fy23-24_nsw_disasters.json"
-CACHE_KEY = "nsw_disasters_cache.json"  # Just if you want to keep a separate cache
-RANKINGS_KEY = "disaster_rankings.json"
+    # ----------------------------------------
+    # 1) Configuration & S3 download
+    # ----------------------------------------
+    s3 = boto3.client("s3")
+    bucket_name = os.environ.get("S3_BUCKET")
+    historical_key = os.environ.get("HISTORICAL_KEY", "fy18-19_to_fy23-24_nsw_disasters.json")
+    output_key = os.environ.get("OUTPUT_KEY", "nsw_suburb_disaster_rankings.json")
+    live_url = os.environ.get("LIVE_URL", "https://www.nsw.gov.au/emergency/recovery/natural-disaster-declarations/fy-2024-25")
+    last_updated = "2025-02-25T12:00:00Z"  # Example fixed date, can be dynamic
 
-# S3 client
-s3_client = boto3.client("s3")
-
-# URL to scrape
-LIVE_URL = "https://www.nsw.gov.au/emergency/recovery/natural-disaster-declarations/fy-2024-25"
-
-# ------------------------------------------
-# Scrape live data
-# ------------------------------------------
-async def scrape_live_data(url):
-    async with async_playwright() as p:
-        browser = await p.chromium.launch(headless=True)
-        page = await browser.new_page()
-        await page.set_extra_http_headers({
-            "User-Agent": "Mozilla/5.0 ..."
-        })
-        await page.goto(url, wait_until="networkidle")
-        # Extract table data
-        disaster_data = await page.evaluate("""
-            () => {
-                const data = [];
-                document.querySelectorAll("tbody tr").forEach(row => {
-                    const cells = row.querySelectorAll("td, th");
-                    if (cells.length >= 5) {
-                        data.push({
-                            "AGRN": cells[0].innerText.trim(),
-                            "disasterType": cells[1].innerText.trim(),
-                            "disasterName": cells[2].innerText.trim(),
-                            "localGovernmentArea": cells[3].innerText.trim(),
-                            "assistanceAvailable": cells[4].innerText.trim()
-                        });
-                    }
-                });
-                return data;
-            }
-        """)
-        await browser.close()
+    # Download historical data from S3
+    try:
+        response = s3.get_object(Bucket=bucket_name, Key=historical_key)
+        historical_data = json.loads(response["Body"].read().decode("utf-8"))
+    except s3.exceptions.NoSuchKey:
+        print(f"⚠️ Historical file '{historical_key}' not found in bucket '{bucket_name}'. Using empty list.")
+        historical_data = []
+    except Exception as e:
+        print(f"❌ Could not read historical data. Error: {e}")
         return {
-            "year": url.split("/")[-1],
-            "last_updated": "2025-02-26T12:00:00Z",
-            "disasters": disaster_data
+            "statusCode": 500,
+            "body": f"Error reading historical data from S3: {e}"
         }
 
-# ------------------------------------------
-# Utility: load/save from S3
-# ------------------------------------------
-def load_s3_object(key):
-    try:
-        response = s3_client.get_object(Bucket=BUCKET_NAME, Key=key)
-        content = response['Body'].read().decode('utf-8')
-        return json.loads(content)
-    except Exception as e:
-        logger.warning(f"Could not load {key} from S3: {e}")
-        return None
-
-def save_s3_object(data, key):
-    try:
-        s3_client.put_object(
-            Bucket=BUCKET_NAME,
-            Key=key,
-            Body=json.dumps(data, indent=4)
+    # ----------------------------------------
+    # 2) Scrape the 2024-25 live data
+    # ----------------------------------------
+    headers = {
+        "User-Agent": (
+            "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"
+            " AppleWebKit/537.36 (KHTML, like Gecko)"
+            " Chrome/120.0.0.0 Safari/537.36"
         )
-        logger.info(f"Saved {key} to bucket {BUCKET_NAME}.")
+    }
+    try:
+        resp = requests.get(live_url, headers=headers, timeout=30)
+        resp.raise_for_status()
     except Exception as e:
-        logger.error(f"Error saving {key} to S3: {e}")
+        print(f"❌ Could not scrape live URL. Error: {e}")
+        return {
+            "statusCode": 500,
+            "body": f"Error scraping live URL: {e}"
+        }
 
-# ------------------------------------------
-# Aggregate
-# ------------------------------------------
-def aggregate_by_suburb(data_entries):
-    from collections import defaultdict
+    soup = BeautifulSoup(resp.text, "html.parser")
+    table = soup.find("table")
+    live_disaster_data = []
+
+    if table:
+        tbody = table.find("tbody")
+        if tbody:
+            rows = tbody.find_all("tr")
+            for row in rows:
+                cells = row.find_all(["td", "th"])
+                if len(cells) >= 4:
+                    agrn = cells[0].get_text(strip=True)
+                    disaster_type = cells[1].get_text(strip=True)
+                    disaster_name = cells[2].get_text(strip=True)
+                    local_government_area = cells[3].get_text(strip=True)
+                    live_disaster_data.append({
+                        "AGRN": agrn,
+                        "disasterType": disaster_type,
+                        "disasterName": disaster_name,
+                        "localGovernmentArea": local_government_area
+                    })
+    else:
+        print("❌ No table found on the live data page.")
+        # Continue but note we have no new data
+    live_data = {
+        "year": live_url.split("/")[-1],  # e.g. "fy-2024-25"
+        "last_updated": last_updated,
+        "disasters": live_disaster_data
+    }
+
+    # ----------------------------------------
+    # 3) Combine with historical data
+    # ----------------------------------------
+    combined_data = historical_data + [live_data]
+
+    # ----------------------------------------
+    # 4) Aggregate by suburb
+    # ----------------------------------------
     suburb_counts = defaultdict(int)
     suburb_disasters = defaultdict(set)
 
-    for entry in data_entries:
-        disasters = entry.get("disasters", [])
-        for disaster in disasters:
+    for entry in combined_data:
+        for disaster in entry.get("disasters", []):
+            # localGovernmentArea might contain multiple lines
             suburbs = disaster.get("localGovernmentArea", "").split("\n")
             for suburb in suburbs:
                 suburb = suburb.strip()
@@ -103,45 +116,36 @@ def aggregate_by_suburb(data_entries):
                     suburb_disasters[suburb].add(disaster.get("disasterName", ""))
 
     aggregated = []
-    for suburb in suburb_counts:
+    for suburb, count in suburb_counts.items():
         aggregated.append({
             "suburb": suburb,
-            "occurrences": suburb_counts[suburb],
+            "occurrences": count,
             "disasterNames": list(suburb_disasters[suburb])
         })
-    # sort descending
+
+    # Sort descending by occurrences
     aggregated.sort(key=lambda x: x["occurrences"], reverse=True)
-    return aggregated
 
-# ------------------------------------------
-# Main script logic
-# ------------------------------------------
-def main():
-    # 1) Scrape new data
-    live_data = asyncio.run(scrape_live_data(LIVE_URL))
-    if not live_data:
-        logger.error("No live data scraped; exiting.")
-        return
-
-    # 2) Load historical data
-    historical_data = load_s3_object(HISTORICAL_KEY) or []
-    # historical_data is presumably a list. If your historical JSON structure
-    # is different, adapt as needed.
-
-    # 3) Combine them
-    combined_data = historical_data + [live_data]
-
-    # 4) Aggregate
-    aggregated = aggregate_by_suburb(combined_data)
-
-    # 5) Save to S3 with final name
-    save_s3_object(aggregated, RANKINGS_KEY)
-    logger.info("Aggregation complete.")
-
-if __name__ == "__main__":
-    main()
-
-
-def lambda_handler(event, context):
-    # For AWS Lambda usage: each invocation runs once
-    return main()
+    # ----------------------------------------
+    # 5) Save aggregated data back to S3
+    # ----------------------------------------
+    try:
+        s3.put_object(
+            Bucket=bucket_name,
+            Key=output_key,
+            Body=json.dumps(aggregated, indent=4).encode("utf-8"),
+            ContentType="application/json"
+        )
+        msg = f"✅ Aggregated data saved to s3://{bucket_name}/{output_key}"
+        print(msg)
+        return {
+            "statusCode": 200,
+            "body": msg
+        }
+    except Exception as e:
+        print(f"❌ Error writing aggregated data to S3: {e}")
+        return {
+            "statusCode": 500,
+            "body": f"Error writing to S3: {e}"
+        }
+    
