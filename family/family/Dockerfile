@@ -7,7 +7,7 @@ COPY requirements.txt ./
 RUN pip install -r requirements.txt
 
 # Copy the Python code
-COPY api_family.py ${LAMBDA_TASK_ROOT}
+COPY family.py ${LAMBDA_TASK_ROOT}
 
-# Set the Lambda entry point (the handler function in api_family.py)
-CMD ["api_family.lambda_handler"]
+# Set the Lambda entry point (the handler function in family.py)
+CMD ["family.lambda_handler"]

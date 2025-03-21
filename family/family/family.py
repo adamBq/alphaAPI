@@ -95,7 +95,7 @@ def lambda_handler(event, context):
 
 if __name__ == "__main__":
   if len(sys.argv) < 2:
-    print("Usage: python api_family_data.py <suburb>")
+    print("Usage: python family_data.py <suburb>")
   else:
     test_suburb = sys.argv[1]
     result = get_family_data(test_suburb)

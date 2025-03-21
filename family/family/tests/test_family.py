@@ -8,7 +8,7 @@ import os
 import sys
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
-from family.api_family import get_family_data, lambda_handler, S3_BUCKET_NAME, S3_CSV_KEY, S3_CODES_KEY
+from family.family import get_family_data, lambda_handler, S3_BUCKET_NAME, S3_CSV_KEY, S3_CODES_KEY
 
 @pytest.fixture
 def s3_setup():
@@ -119,7 +119,7 @@ def test_get_family_data_no_csv_data(s3_setup, set_env_vars, monkeypatch):
     if Key == S3_CODES_KEY:
       codes_content = "SUBURB_CODES_MAP = {'001': 'TestSuburb'}"
       return {"Body": BytesIO(codes_content.encode("utf-8"))}
-  monkeypatch.setattr("family.api_family.s3_client.get_object", fake_get_object_csv)
+  monkeypatch.setattr("family.family.s3_client.get_object", fake_get_object_csv)
 
   result_json = get_family_data("TestSuburb")
   result = json.loads(result_json)
@@ -174,7 +174,7 @@ def test_lambda_handler_exception(monkeypatch, set_env_vars):
   """
   def faulty_get_family_data(suburb_name, *args, **kwargs):
     raise Exception("Test exception")
-  monkeypatch.setattr("family.api_family.get_family_data", faulty_get_family_data)
+  monkeypatch.setattr("family.family.get_family_data", faulty_get_family_data)
 
   event = {"pathParameters": {"suburb": "TestSuburb"}}
   response = lambda_handler(event, {})

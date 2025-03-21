@@ -90,7 +90,7 @@ def lambda_handler(event, context):
 
 if __name__ == "__main__":
   if len(sys.argv) < 2:
-    print("Usage: python api_population.py <suburb>")
+    print("Usage: python population.py <suburb>")
   else:
     suburb = sys.argv[1]
     output = get_suburb_population(suburb)
