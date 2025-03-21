@@ -82,12 +82,6 @@ def lambda_handler(event, context):
       "body": json.dumps({"error": f"An error occurred: {str(e)}"})
     }
 
-  response_json = get_suburb_population(suburb)
-  return {
-    "statusCode": 200,
-    "body": response_json
-  }
-
 if __name__ == "__main__":
   if len(sys.argv) < 2:
     print("Usage: python population.py <suburb>")
