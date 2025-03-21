@@ -7,7 +7,7 @@ import pandas as pd
 # Ensure Python finds the CrimeDataProcessor module
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
-from CrimeDataProcessor.CrimeDataProcessor import lambda_handler, fetch_suburb_data, process_and_store_crime_data, send_to_dlq
+from crime_data_processor.crime_data_processor import lambda_handler, fetch_suburb_data, process_and_store_crime_data, send_to_dlq
 
 @pytest.fixture
 def mock_crime_data():
@@ -27,14 +27,14 @@ def test_lambda_handler_success(monkeypatch, mock_crime_data):
     def mock_fetch_suburb_data(suburb):
         return mock_crime_data if suburb == "Sydney" else None
 
-    monkeypatch.setattr("CrimeDataProcessor.CrimeDataProcessor.fetch_suburb_data", mock_fetch_suburb_data)
+    monkeypatch.setattr("crime_data_processor.crime_data_processor.fetch_suburb_data", mock_fetch_suburb_data)
 
     # Mock DynamoDB put_item
     class MockDynamoDBTable:
         def put_item(self, Item):
             print(f"Mock DynamoDB Store: {Item}")
 
-    monkeypatch.setattr("CrimeDataProcessor.CrimeDataProcessor.table", MockDynamoDBTable())
+    monkeypatch.setattr("crime_data_processor.crime_data_processor.table", MockDynamoDBTable())
 
     event = {"Records": [{"body": json.dumps({"suburbs": ["Sydney"]})}]}
     context = None
@@ -49,14 +49,14 @@ def test_lambda_handler_s3_fetch_failure(monkeypatch, capsys):
     def mock_fetch_suburb_data(suburb):
         return None  # Simulate S3 fetch failure
 
-    monkeypatch.setattr("CrimeDataProcessor.CrimeDataProcessor.fetch_suburb_data", mock_fetch_suburb_data)
+    monkeypatch.setattr("crime_data_processor.crime_data_processor.fetch_suburb_data", mock_fetch_suburb_data)
 
     # Mock send_to_dlq() to track failures
     failed_suburbs = []
     def mock_send_to_dlq(suburb):
         failed_suburbs.append(suburb)
 
-    monkeypatch.setattr("CrimeDataProcessor.CrimeDataProcessor.send_to_dlq", mock_send_to_dlq)
+    monkeypatch.setattr("crime_data_processor.crime_data_processor.send_to_dlq", mock_send_to_dlq)
 
     event = {"Records": [{"body": json.dumps({"suburbs": ["Sydney"]})}]}
     context = None
@@ -73,20 +73,20 @@ def test_lambda_handler_processing_failure(monkeypatch, mock_crime_data):
     def mock_fetch_suburb_data(suburb):
         return mock_crime_data
 
-    monkeypatch.setattr("CrimeDataProcessor.CrimeDataProcessor.fetch_suburb_data", mock_fetch_suburb_data)
+    monkeypatch.setattr("crime_data_processor.crime_data_processor.fetch_suburb_data", mock_fetch_suburb_data)
 
     # Simulate an error in processing
     def mock_process_and_store_crime_data(df):
         raise Exception("Processing error")
 
-    monkeypatch.setattr("CrimeDataProcessor.CrimeDataProcessor.process_and_store_crime_data", mock_process_and_store_crime_data)
+    monkeypatch.setattr("crime_data_processor.crime_data_processor.process_and_store_crime_data", mock_process_and_store_crime_data)
 
     # Track DLQ messages
     failed_suburbs = []
     def mock_send_to_dlq(suburb):
         failed_suburbs.append(suburb)
 
-    monkeypatch.setattr("CrimeDataProcessor.CrimeDataProcessor.send_to_dlq", mock_send_to_dlq)
+    monkeypatch.setattr("crime_data_processor.crime_data_processor.send_to_dlq", mock_send_to_dlq)
 
     event = {"Records": [{"body": json.dumps({"suburbs": ["Sydney"]})}]}
     context = None
@@ -100,13 +100,13 @@ def test_lambda_handler_dlq_failure(monkeypatch, mock_crime_data):
     def mock_fetch_suburb_data(suburb):
         return mock_crime_data
 
-    monkeypatch.setattr("CrimeDataProcessor.CrimeDataProcessor.fetch_suburb_data", mock_fetch_suburb_data)
+    monkeypatch.setattr("crime_data_processor.crime_data_processor.fetch_suburb_data", mock_fetch_suburb_data)
 
     # Simulate processing failure
     def mock_process_and_store_crime_data(df):
         return None  # Simulate failure
 
-    monkeypatch.setattr("CrimeDataProcessor.CrimeDataProcessor.process_and_store_crime_data", mock_process_and_store_crime_data)
+    monkeypatch.setattr("crime_data_processor.crime_data_processor.process_and_store_crime_data", mock_process_and_store_crime_data)
 
     event = {"Records": [{"body": json.dumps({"suburbs": ["Sydney"]})}]}
     context = None

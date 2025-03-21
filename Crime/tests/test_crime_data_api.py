@@ -7,7 +7,7 @@ import pytest
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
 # Import the Lambda function
-from CrimeDataAPI.CrimeDataAPI import lambda_handler
+from crime_data_api.crime_data_api import lambda_handler
 
 @pytest.fixture
 def mock_static_response():
@@ -49,7 +49,7 @@ def test_lambda_handler_valid_suburb(monkeypatch, mock_static_response):
         return {}
 
     # Monkeypatch the table object to use mock function
-    monkeypatch.setattr("CrimeDataAPI.CrimeDataAPI.table", 
+    monkeypatch.setattr("crime_data_api.crime_data_api.table", 
                         type("MockTable", (), {"get_item": mock_get_item}))
 
     response = lambda_handler(event, None)
@@ -74,7 +74,7 @@ def test_lambda_handler_non_existent_suburb(monkeypatch):
     event = {"queryStringParameters": {"suburb": "NonExistent"}}
 
     # Monkeypatch to return empty response
-    monkeypatch.setattr("CrimeDataAPI.CrimeDataAPI.table", 
+    monkeypatch.setattr("crime_data_api.crime_data_api.table", 
                         type("MockTable", (), {"get_item": lambda Key: {}}))
 
     response = lambda_handler(event, None)
@@ -90,7 +90,7 @@ def test_lambda_handler_exception(monkeypatch):
         raise Exception("Test error")
 
     # Monkeypatch table to simulate an exception
-    monkeypatch.setattr("CrimeDataAPI.CrimeDataAPI.table", 
+    monkeypatch.setattr("crime_data_api.crime_data_api.table", 
                         type("MockTable", (), {"get_item": mock_raising_exception}))
 
     event = {"queryStringParameters": {"suburb": "Sydney"}}

@@ -13,6 +13,12 @@ dlq_url = "https://sqs.us-east-1.amazonaws.com/216989131264/CrimeDataProcessingD
 
 table = dynamodb.Table(dynamodb_table_name)
 
+CORS_HEADERS = {
+    "Access-Control-Allow-Origin": "*",
+    "Access-Control-Allow-Headers": "*",
+    "Access-Control-Allow-Methods": "GET,POST,OPTIONS",
+}
+
 def send_to_dlq(suburb):
     """
     Sends failed suburb processing jobs to the Dead Letter Queue
@@ -164,4 +170,4 @@ def lambda_handler(event, context):
     else:
         print(f"No failed suburbs")
     
-    return {"statusCode" : 200, "body" : "Data processed successfully"}
+    return {"statusCode" : 200, "headers" : CORS_HEADERS, "body" : "Data processed successfully"}

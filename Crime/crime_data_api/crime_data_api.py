@@ -4,6 +4,12 @@ import boto3
 dynamodb = boto3.resource("dynamodb")
 table = dynamodb.Table("CrimeData")
 
+CORS_HEADERS = {
+    "Access-Control-Allow-Origin": "*",
+    "Access-Control-Allow-Headers": "*",
+    "Access-Control-Allow-Methods": "GET,POST,OPTIONS",
+}
+
 def filter_summary_data(data):
     """
     Removes per-year and per-month breakdown if detailed=False
@@ -34,6 +40,7 @@ def lambda_handler(event, context):
         if not suburb:
             return {
                 "statusCode" : 400,
+                "headers" : CORS_HEADERS,
                 "body" : json.dumps({"error" : "Missing required parameter : suburb"})
             }
         
@@ -43,16 +50,19 @@ def lambda_handler(event, context):
         if "Item" not in response:
             return {
                 "statusCode" : 404,
+                "headers" : CORS_HEADERS,
                 "body" : json.dumps({"error" : f"No data found for suburb: {suburb}"})
             }
         
         return {
             "statusCode" : 200,
+            "heders" : CORS_HEADERS,
             "body" : json.dumps(response["Item"])
         }
         
     except Exception as e:
         return {
             "statusCode" : 400,
+            "headers" : CORS_HEADERS,
             "body" : json.dumps({"error" : str(e)})
         }
