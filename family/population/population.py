@@ -62,7 +62,6 @@ def get_suburb_population(suburb_name, bucket_name=S3_BUCKET_NAME, csv_key=S3_CS
 
 def lambda_handler(event, context):
   print("Received event: ", json.dumps(event))
-
   try:
     suburb = event.get("pathParameters", {}).get("suburb")
     if not suburb:
@@ -71,6 +70,14 @@ def lambda_handler(event, context):
         "body": json.dumps({"error": "No suburb provided in event"})
       }
     response_json = get_suburb_population(suburb)
+    response_obj = json.loads(response_json)
+
+    if "error" in response_obj and "not found" in response_obj["error"].lower():
+      return {
+        "statusCode": 404,
+        "body": response_json
+      }
+
     return {
       "statusCode": 200,
       "body": response_json
@@ -81,6 +88,7 @@ def lambda_handler(event, context):
       "statusCode": 500,
       "body": json.dumps({"error": f"An error occurred: {str(e)}"})
     }
+
 
 if __name__ == "__main__":
   if len(sys.argv) < 2:
