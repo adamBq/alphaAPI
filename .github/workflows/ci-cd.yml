@@ -38,7 +38,9 @@ jobs:
           for file in $(find . -maxdepth 2 -type f -name "deploy.sh"); do
             echo "Running $file"
             chmod +x "$file"
-            bash "$file"
+            pushd "$(dirname "$file")"
+            bash deploy.sh
+            popd
           done
 
       - name: Run tests if tests folder exists
