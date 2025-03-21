@@ -24,6 +24,7 @@ jobs:
           python -m pip install --upgrade pip
           pip install pytest
           pip install pylint
+          pip install pandas
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v1
@@ -31,6 +32,10 @@ jobs:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ secrets.AWS_REGION }}
+
+      - name: Analysing the code with pylint
+        run: |
+          pylint $(git ls-files '*.py')
 
       - name: Run deploy.sh scripts in each folder
         run: |
@@ -51,6 +56,4 @@ jobs:
             pytest "$test_dir"
           done
 
-      - name: Analysing the code with pylint
-        run: |
-          pylint $(git ls-files '*.py')
+
