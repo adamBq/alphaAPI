@@ -1,5 +1,6 @@
-# Use AWS Lambda's Python 3.9 base image
-FROM public.ecr.aws/lambda/python:3.12
+ARG PLATFORM=linux/amd64
+
+FROM --platform=${PLATFORM} public.ecr.aws/lambda/python:3.12
 
 # Copy requirements.txt first so Docker can cache the layer when dependencies don't change
 COPY requirements.txt ./

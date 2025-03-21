@@ -5,39 +5,11 @@ info:
   version: 1.0.0
 
 servers:
-  -  url: https://api.yourdomain.com
+  -  url: https://tzeks84nk6.execute-api.ap-southeast-2.amazonaws.com/test/family/
      description: Production Server
 
 paths:
-  /data/update:
-    post:
-      summary: Trigger an update by making a request to the ABS API
-      description: This endpoint triggers a request to the ABS API to fetch the latest census data and update the database.
-      responses:
-        200:
-          description: Successfully requested data from ABS API
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  message:
-                    type: string
-              example:
-                message: "ABS API update triggered successfully"
-        500:
-          description: Failed to fetch data from ABS API
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  error:
-                    type: string
-              example:
-                error: "Failed to retrieve data from ABS API"
-
-  /data/family/{address}:
+  /family/{suburb}:
     get:
       summary: Get family composition data for a given address
       parameters:
@@ -98,7 +70,7 @@ paths:
               example:
                 error: "Address not found"
 
-  /data/population/{suburb}:
+  /population/{suburb}:
     get:
       summary: Get population data for a given suburb
       parameters:

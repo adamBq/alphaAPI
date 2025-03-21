@@ -1,5 +1,6 @@
-# Base image for AWS Lambda Python
-FROM public.ecr.aws/lambda/python:3.12
+ARG PLATFORM=linux/amd64
+
+FROM --platform=${PLATFORM} public.ecr.aws/lambda/python:3.12
 
 # Set working directory
 WORKDIR /var/task
