@@ -92,17 +92,24 @@ def lambda_handler(event, context):
                 "statusCode": 400,
                 "body": json.dumps({"error": "No suburb provided in event"})
             }
+
         response_json = get_family_data(suburb)
+        response_obj = json.loads(response_json)
+
+        if "error" in response_obj and "not found" in response_obj["error"].lower(
+        ):
+            return {
+                "statusCode": 404,
+                "body": response_json
+            }
         return {
             "statusCode": 200,
             "body": response_json
         }
     except Exception as e:
         print(f"Error: {e}")
-        return {
-            "statusCode": 500,
-            "body": json.dumps({"error": f"An error occurred: {str(e)}"})
-        }
+        return {"statusCode": 500, "body": json.dumps(
+            {"error": f"Error processing the request: {str(e)}"})}
 
 
 if __name__ == "__main__":
