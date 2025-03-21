@@ -2,7 +2,7 @@
 set -e
 
 # Configuration variables
-ACCOUNT_ID="001318921721"
+ACCOUNT_ID="522814692697"
 REGION="ap-southeast-2"
 ECR_URI="${ACCOUNT_ID}.dkr.ecr.${REGION}.amazonaws.com"
 LAMBDA_ROLE="arn:aws:iam::${ACCOUNT_ID}:role/LambdaExecutionRole"
@@ -41,12 +41,13 @@ for dir in */ ; do
         
         # Check if the Lambda function already exists and update or create accordingly.
         echo "Checking if Lambda function ${FUNCTION_NAME} exists..."
-        if aws lambda get-function --function-name ${FUNCTION_NAME} --region ${REGION} > /dev/null 2>&1; then
+        if aws lambda get-function --function-name ${FUNCTION_NAME} --region ${REGION} --no-cli-pager > /dev/null 2>&1; then
             echo "Lambda function exists. Updating function code..."
             aws lambda update-function-code \
               --function-name ${FUNCTION_NAME} \
               --image-uri ${ECR_URI}/${FUNCTION_NAME}:latest \
-              --region ${REGION}
+              --region ${REGION} \
+              --no-cli-pager
         else
             echo "Lambda function does not exist. Creating new Lambda function..."
             aws lambda create-function \
@@ -54,7 +55,8 @@ for dir in */ ; do
               --package-type Image \
               --code ImageUri=${ECR_URI}/${FUNCTION_NAME}:latest \
               --role ${LAMBDA_ROLE} \
-              --region ${REGION}
+              --region ${REGION} \
+              --no-cli-pager
         fi
         
         echo "Deployment for ${FUNCTION_NAME} completed."

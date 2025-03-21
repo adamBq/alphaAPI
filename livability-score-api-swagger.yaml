@@ -8,7 +8,7 @@ info:
     and returns a detailed breakdown for each category.
   version: "1.0.0"
 servers:
-  - url: https://api.yourdomain.com/v1
+  - url: https://m42dj4mgj8.execute-api.ap-southeast-2.amazonaws.com/prod/
 paths:
   /livability_score:
     post:
