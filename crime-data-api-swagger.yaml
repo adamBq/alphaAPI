@@ -2,55 +2,35 @@ openapi: 3.0.0
 info:
   title: NSW Crime Data API
   description: Provides historical and recent crime data for NSW suburbs using statistics from the NSW BOCSAR open data website.
-  version: 1.0.0
+  version: 1.1.0
 servers:
   - url: https://api.yourdomain.com
     description: Production Server
+
 paths:
-  /data/collect:
-    post:
-      summary: Triggers crime data collection and processing
-      description: Fetches the latest crime statistics from the NSW BOCSAR website, validates metadata, and updates the database if changes are detected.
-      operationId: collectCrimeData
-      responses:
-        "200":
-          description: Data collection and processing completed successfully.
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  message:
-                    type: string
-                    example: "Crime data collection and processing completed successfully."
-        "304":
-          description: No new updates available, skipping processing.
-          content:
-            apllication/json:
-              schema:
-                type: object
-                properties:
-                  message:
-                    type: string
-                    example: "No updates detected. Skipping data processing."
-        "500":
-          description: Internal server error
-  /crime/suburb/{name}:
+  /crime/{suburb}:
     get:
-      summary: Retrieve crime statistics for a given suburb
-      description: Returns crime statistics for the requested suburb based on record ofences.
+      summary: Retrieve crime statistics and trends for a given suburb
+      description: Returns crime statistics and historical trends for the requested suburb from the DynamoDB `CrimeData` table.
       operationId: getCrimeBySuburb
       parameters:
-        - name: name
+        - name: suburb
           in: path
           required: true
           description: Name of the suburb (case-insensitive)
           schema:
             type: string
             example: "Kensington"
+        - name: detailed
+          in: query
+          required: false
+          description: If `true`, returns full crime data. If `false`, removes per-year and per-month breakdown.
+          schema:
+            type: boolean
+            example: true
       responses:
         "200":
-          description: Crime data for the requested suburb
+          description: Crime statistics and trends for the requested suburb
           content:
             application/json:
               schema:
@@ -59,15 +39,15 @@ paths:
                   suburb:
                     type: string
                     example: "Kensington"
-                  numCrimes:
+                  totalNumCrimes:
                     type: integer
                     example: 500
-                  crime:
+                  crimeSummary:
                     type: object
                     additionalProperties:
                       type: object
                       properties:
-                        numOffences:
+                        totalNum:
                           type: integer
                           example: 250
                         subCrimeType:
@@ -75,79 +55,36 @@ paths:
                           additionalProperties:
                             type: object
                             properties:
-                              numOffences:
+                              totalNum:
                                 type: integer
                                 example: 100
-        "404":
-          description: Suburb not found in the dataset.
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  suburb:
-                    type: string
-                    example: ""
-                  numCrimes:
-                    type: integer
-                    example: 0
-                  crime:
-                    type: object
-                    example: {}
-        "500":
-          description: Internal server error
-  /crime/trends/{suburb}:
-    get:
-      summary: Retrieve crime trends for a given suburb
-      description: Returns historical crime trends over the last 10 years for a given suburb.
-      operationId: getCrimeTrends
-      parameters:
-        - name: suburb
-          in: path
-          required: true
-          description: Name of the suburb (case-insensitive)
-          schema:
-            type: string
-            example: "Wollongong"
-      responses:
-        "200":
-          description: Crime trends for the requested suburb
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  suburb:
-                    type: string
-                    example: "Wollongong"
-                  crime:
+                  crimeTrends:
                     type: object
                     additionalProperties:
                       type: object
                       properties:
-                        name:
+                        trendSlope:
+                          type: number
+                          example: -0.5
+                        trendPercentage:
+                          type: number
+                          example: -12.5
+                        movingAvg:
+                          type: number
+                          example: 45
+                        trendCategory:
                           type: string
-                          example: "Theft"
-                        subCrimeType:
-                          type: object
-                          additionalProperties:
-                            type: object
-                            properties:
-                              name:
-                                type: string
-                                example: "Vehicle Theft"
-                              trendSlope:
-                                type: number
-                                example: -0.5
-                              trendPercentage:
-                                type: number
-                                example: -12.5
-                              movingAvg:
-                                type: number
-                                example: 45
-                              trendCategory:
-                                type: string
-                                example: "Decreasing"
+                          example: "Decreasing"
+        "400":
+          description: Missing required parameter `suburb`
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "Missing required parameter: suburb"
         "404":
           description: Suburb not found in the dataset.
           content:
@@ -155,11 +92,8 @@ paths:
               schema:
                 type: object
                 properties:
-                  suburb:
+                  error:
                     type: string
-                    example: ""
-                  crime:
-                    type: object
-                    example: {}
+                    example: "No data found for suburb: {suburb}"
         "500":
           description: Internal server error

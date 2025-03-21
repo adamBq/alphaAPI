@@ -10,6 +10,12 @@ batch_size = 10
 
 CRIME_DATA_URL = "https://bocsarblob.blob.core.windows.net/bocsar-open-data/SuburbData.zip"
 
+CORS_HEADERS = {
+    "Access-Control-Allow-Origin": "*",
+    "Access-Control-Allow-Headers": "*",
+    "Access-Control-Allow-Methods": "GET,POST,OPTIONS",
+}
+
 def fetch():
     """
     This method will download the crime data ZIP file, extract the CSV file
@@ -52,7 +58,7 @@ def lambda_handler(event, context):
     # ====================
     crime_data = fetch()
     if crime_data is None:
-        return {"statusCode" : 500, "body" : "Error fetching crime data"}
+        return {"statusCode" : 500, "headers" : CORS_HEADERS, "body" : "Error fetching crime data"}
     
     # ====================
     # Upload and Queue Data
@@ -80,7 +86,7 @@ def lambda_handler(event, context):
         print("Data uploaded and queued successfully")
     except Exception as e:
         print(f"Error uploading data: {e}")
-        return {"statusCode" : 500, "body" : "Error uploading data"}
+        return {"statusCode" : 500, "headers" : CORS_HEADERS, "body" : "Error uploading data"}
     
-    return {"statusCode" : 200, "body" : "Data fetched successfully"}
+    return {"statusCode" : 200, "headers" : CORS_HEADERS, "body" : "Data fetched successfully"}
     
