@@ -9,7 +9,7 @@ import sys
 
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
-from population.api_population import get_suburb_population, lambda_handler, S3_BUCKET_NAME, S3_CSV_KEY, S3_CODES_KEY
+from population.population import get_suburb_population, lambda_handler, S3_BUCKET_NAME, S3_CSV_KEY, S3_CODES_KEY
 
 # ---------------------------------------------------------------------
 # Fixtures
@@ -118,7 +118,7 @@ def test_get_suburb_population_no_csv_data(s3_setup, set_env_vars, monkeypatch):
           codes_content = "SUBURB_CODES_MAP = {'001': 'TestSuburb'}"
           return {"Body": BytesIO(codes_content.encode("utf-8"))}
   
-  monkeypatch.setattr("population.api_population.s3_client.get_object", fake_get_object)
+  monkeypatch.setattr("population.population.s3_client.get_object", fake_get_object)
   result_json = get_suburb_population("TestSuburb")
   result = json.loads(result_json)
   assert "error" in result
@@ -174,7 +174,7 @@ def test_lambda_handler_exception(monkeypatch, set_env_vars):
   """
   def faulty_get_suburb_population(suburb_name, *args, **kwargs):
     raise Exception("Test exception")
-  monkeypatch.setattr("population.api_population.get_suburb_population", faulty_get_suburb_population)
+  monkeypatch.setattr("population.population.get_suburb_population", faulty_get_suburb_population)
 
   event = {"pathParameters": {"suburb": "TestSuburb"}}
   response = lambda_handler(event, {})
