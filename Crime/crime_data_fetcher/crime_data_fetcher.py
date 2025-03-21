@@ -16,17 +16,18 @@ CORS_HEADERS = {
     "Access-Control-Allow-Methods": "GET,POST,OPTIONS",
 }
 
+
 def fetch():
     """
     This method will download the crime data ZIP file, extract the CSV file
-    and load it into a pandas DataFrame. 
+    and load it into a pandas DataFrame.
 
     Returns:
         crime_data: The crime data in a pandas DataFrame
     """
     try:
         print("Downloading crime data...")
-        
+
         response = requests.get(CRIME_DATA_URL)
         response.raise_for_status()
 
@@ -47,6 +48,7 @@ def fetch():
         print(f"Unexpected error: {e}")
         return None
 
+
 def lambda_handler(event, context):
     """
     This lambda will be called through an AWS EventBridge which will be invoked
@@ -58,14 +60,17 @@ def lambda_handler(event, context):
     # ====================
     crime_data = fetch()
     if crime_data is None:
-        return {"statusCode" : 500, "headers" : CORS_HEADERS, "body" : "Error fetching crime data"}
-    
+        return {
+            "statusCode": 500,
+            "headers": CORS_HEADERS,
+            "body": "Error fetching crime data"}
+
     # ====================
     # Upload and Queue Data
     # ====================
     try:
         suburbs = crime_data["Suburb"].unique()
-        
+
         # Upload raw data to S3
         for suburb in suburbs:
             suburb_df = crime_data[crime_data["Suburb"] == suburb]
@@ -77,16 +82,21 @@ def lambda_handler(event, context):
 
         # Queue jobs to SQS
         for i in range(0, len(suburbs), batch_size):
-            batch_suburbs = suburbs[i : i + batch_size]
-            message_body = json.dumps({"suburbs" : batch_suburbs.tolist()})
+            batch_suburbs = suburbs[i: i + batch_size]
+            message_body = json.dumps({"suburbs": batch_suburbs.tolist()})
 
             sqs.send_message(QueueUrl=sqs_queue_url, MessageBody=message_body)
             print(f"Queued jobs for {batch_suburbs} to SQS")
-            
+
         print("Data uploaded and queued successfully")
     except Exception as e:
         print(f"Error uploading data: {e}")
-        return {"statusCode" : 500, "headers" : CORS_HEADERS, "body" : "Error uploading data"}
-    
-    return {"statusCode" : 200, "headers" : CORS_HEADERS, "body" : "Data fetched successfully"}
-    
+        return {
+            "statusCode": 500,
+            "headers": CORS_HEADERS,
+            "body": "Error uploading data"}
+
+    return {
+        "statusCode": 200,
+        "headers": CORS_HEADERS,
+        "body": "Data fetched successfully"}

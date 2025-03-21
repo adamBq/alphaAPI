@@ -53,7 +53,8 @@ def set_env_vars():
     os.environ["S3_BUCKET"] = "test-bucket"
     os.environ["HISTORICAL_KEY"] = "test-historical.json"
     os.environ["OUTPUT_KEY"] = "test-output.json"
-    os.environ["LIVE_URL"] = "https://example.com/fake-page"  # We'll mock requests
+    # We'll mock requests
+    os.environ["LIVE_URL"] = "https://example.com/fake-page"
     yield
     os.environ.clear()
     os.environ.update(old_env)
@@ -130,13 +131,17 @@ def test_collector_success(s3_setup, set_env_vars, mock_requests_success):
     result = s3_client.get_object(Bucket="test-bucket", Key="test-output.json")
     output_content = json.loads(result["Body"].read().decode("utf-8"))
 
-    # We expect 2 suburbs total: "TestCouncil" (historical) + "MockCouncil1" (scraped)
+    # We expect 2 suburbs total: "TestCouncil" (historical) + "MockCouncil1"
+    # (scraped)
     suburb_names = [entry["suburb"] for entry in output_content]
     assert "TestCouncil" in suburb_names
     assert "MockCouncil1" in suburb_names
 
 
-def test_collector_missing_historical(s3_setup, set_env_vars, mock_requests_success):
+def test_collector_missing_historical(
+        s3_setup,
+        set_env_vars,
+        mock_requests_success):
     """
     If the historical file is missing, we should handle gracefully (empty list).
     """
@@ -181,18 +186,26 @@ def test_collector_scrape_failure(s3_setup, set_env_vars, monkeypatch):
     assert "Error scraping live URL" in response["body"]
 
 
-def test_collector_s3_write_failure(s3_setup, set_env_vars, mock_requests_success, monkeypatch):
+def test_collector_s3_write_failure(
+        s3_setup,
+        set_env_vars,
+        mock_requests_success,
+        monkeypatch):
     """
     If writing to S3 fails, we should return 500.
     """
     # Save the original boto3.client function
     orig_boto_client = boto3.client
 
-    # Patch boto3.client so that any request for "s3" returns our existing s3_setup client.
-    monkeypatch.setattr(
-        boto3, "client",
-        lambda service, *args, **kwargs: s3_setup if service == "s3" else orig_boto_client(service, *args, **kwargs)
-    )
+    # Patch boto3.client so that any request for "s3" returns our existing
+    # s3_setup client.
+    monkeypatch.setattr(boto3,
+                        "client",
+                        lambda service,
+                        *args,
+                        **kwargs: s3_setup if service == "s3" else orig_boto_client(service,
+                                                                                    *args,
+                                                                                    **kwargs))
 
     # Patch the put_object method of our s3_setup client to raise an exception.
     monkeypatch.setattr(
@@ -206,4 +219,3 @@ def test_collector_s3_write_failure(s3_setup, set_env_vars, mock_requests_succes
 
     assert response["statusCode"] == 500
     assert "Error writing to S3" in response["body"]
-

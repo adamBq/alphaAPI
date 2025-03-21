@@ -5,6 +5,7 @@ import requests
 from bs4 import BeautifulSoup
 from collections import defaultdict
 
+
 def lambda_handler(event, context):
     """
     Example container-based Lambda that:
@@ -25,9 +26,15 @@ def lambda_handler(event, context):
     # ----------------------------------------
     s3 = boto3.client("s3")
     bucket_name = os.environ.get("S3_BUCKET")
-    historical_key = os.environ.get("HISTORICAL_KEY", "fy18-19_to_fy23-24_nsw_disasters.json")
-    output_key = os.environ.get("OUTPUT_KEY", "nsw_suburb_disaster_rankings.json")
-    live_url = os.environ.get("LIVE_URL", "https://www.nsw.gov.au/emergency/recovery/natural-disaster-declarations/fy-2024-25")
+    historical_key = os.environ.get(
+        "HISTORICAL_KEY",
+        "fy18-19_to_fy23-24_nsw_disasters.json")
+    output_key = os.environ.get(
+        "OUTPUT_KEY",
+        "nsw_suburb_disaster_rankings.json")
+    live_url = os.environ.get(
+        "LIVE_URL",
+        "https://www.nsw.gov.au/emergency/recovery/natural-disaster-declarations/fy-2024-25")
     last_updated = "2025-02-25T12:00:00Z"  # Example fixed date, can be dynamic
 
     # Download historical data from S3
@@ -35,7 +42,8 @@ def lambda_handler(event, context):
         response = s3.get_object(Bucket=bucket_name, Key=historical_key)
         historical_data = json.loads(response["Body"].read().decode("utf-8"))
     except s3.exceptions.NoSuchKey:
-        print(f"⚠️ Historical file '{historical_key}' not found in bucket '{bucket_name}'. Using empty list.")
+        print(
+            f"⚠️ Historical file '{historical_key}' not found in bucket '{bucket_name}'. Using empty list.")
         historical_data = []
     except Exception as e:
         print(f"❌ Could not read historical data. Error: {e}")
@@ -113,7 +121,8 @@ def lambda_handler(event, context):
                 suburb = suburb.strip()
                 if suburb:
                     suburb_counts[suburb] += 1
-                    suburb_disasters[suburb].add(disaster.get("disasterName", ""))
+                    suburb_disasters[suburb].add(
+                        disaster.get("disasterName", ""))
 
     aggregated = []
     for suburb, count in suburb_counts.items():
@@ -148,4 +157,3 @@ def lambda_handler(event, context):
             "statusCode": 500,
             "body": f"Error writing to S3: {e}"
         }
-    
