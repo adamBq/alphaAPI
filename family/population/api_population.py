@@ -5,10 +5,8 @@ import sys
 import boto3
 from io import StringIO
 
-# Initialize the S3 client
 s3_client = boto3.client('s3')
 
-# Default S3 references
 S3_BUCKET_NAME = 'paige-3011'
 S3_CSV_KEY = '2021Census_G01_NSW_SAL.csv'
 S3_CODES_KEY = 'suburb_codes.py'
@@ -63,19 +61,25 @@ def get_suburb_population(suburb_name, bucket_name=S3_BUCKET_NAME, csv_key=S3_CS
   return json.dumps(result, indent=4)
 
 def lambda_handler(event, context):
-  """
-  AWS Lambda handler:
-  1. Reads 'suburb' from the pathParameters (typical for API Gateway).
-  2. Calls get_suburb_population to fetch data from S3 and filter.
-  3. Returns an HTTP-style response.
-  """
   print("Received event: ", json.dumps(event))
 
-  suburb = event.get("pathParameters", {}).get("suburb")
-  if not suburb:
+  try:
+    suburb = event.get("pathParameters", {}).get("suburb")
+    if not suburb:
+      return {
+        "statusCode": 400,
+        "body": json.dumps({"error": "No suburb provided in event"})
+      }
+    response_json = get_suburb_population(suburb)
     return {
-      "statusCode": 400,
-      "body": json.dumps({"error": "No suburb provided in event"})
+      "statusCode": 200,
+      "body": response_json
+    }
+  except Exception as e:
+    print(f"Error: {e}")
+    return {
+      "statusCode": 500,
+      "body": json.dumps({"error": f"An error occurred: {str(e)}"})
     }
 
   response_json = get_suburb_population(suburb)
