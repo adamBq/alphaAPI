@@ -73,25 +73,25 @@ def get_family_data(suburb_name, bucket_name=S3_BUCKET_NAME, csv_key=S3_CSV_KEY,
   return json.dumps(result, indent=4)
 
 def lambda_handler(event, context):
-  """
-  AWS Lambda handler:
-  1. Reads 'suburb' from the event's pathParameters (assuming API Gateway usage).
-  2. Calls get_family_data to fetch data from S3 and filter.
-  3. Returns an HTTP-style response.
-  """
-
-  suburb = event["pathParameters"]["suburb"]
-  if not suburb:
+  try:
+    suburb = event["pathParameters"]["suburb"]
+    if not suburb:
+      return {
+        "statusCode": 400,
+        "body": json.dumps({"error": "No suburb provided in event"})
+      }
+    response_json = get_family_data(suburb)
     return {
-      "statusCode": 400,
-      "body": json.dumps({"error": "No suburb provided in event"})
+      "statusCode": 200,
+      "body": response_json
+    }
+  except Exception as e:
+    print(f"Error: {e}")
+    return {
+      "statusCode": 500,
+      "body": json.dumps({"error": f"An error occurred: {str(e)}"})
     }
 
-  response_json = get_family_data(suburb)
-  return {
-    "statusCode": 200,
-    "body": response_json
-  }
 
 if __name__ == "__main__":
   if len(sys.argv) < 2:
