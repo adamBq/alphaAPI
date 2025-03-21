@@ -167,23 +167,30 @@ def test_retriever_invalid_json(s3_setup, set_env_vars):
         assert "Invalid format" in response["error"]
 
 
-def test_retriever_s3_generic_exception_proxy(s3_setup, set_env_vars, monkeypatch):
+def test_retriever_s3_generic_exception_proxy(
+        s3_setup, set_env_vars, monkeypatch):
     """
     Test that a generic exception during S3.get_object in proxy mode returns a 500 response.
     """
     # Force lambda_handler to use our Moto S3 client (s3_setup)
     orig_boto_client = boto3.client
-    monkeypatch.setattr(
-        boto3, "client",
-        lambda service, *args, **kwargs: s3_setup if service == "s3" else orig_boto_client(service, *args, **kwargs)
-    )
+    monkeypatch.setattr(boto3,
+                        "client",
+                        lambda service,
+                        *args,
+                        **kwargs: s3_setup if service == "s3" else orig_boto_client(service,
+                                                                                    *args,
+                                                                                    **kwargs))
     # Patch get_object so that it raises a generic exception
     monkeypatch.setattr(
         s3_setup, "get_object",
         lambda *args, **kwargs: (_ for _ in ()).throw(Exception("Generic S3 error"))
     )
 
-    event = {"suburb": "Shoalhaven", "includeHighest": True, "httpMethod": "GET"}
+    event = {
+        "suburb": "Shoalhaven",
+        "includeHighest": True,
+        "httpMethod": "GET"}
     context = {}
     response = lambda_handler(event, context)
 
@@ -227,4 +234,3 @@ def test_retriever_invalid_json_proxy(s3_setup, set_env_vars):
     assert response["statusCode"] == 500
     body = json.loads(response["body"])
     assert "Invalid format" in body["error"]
-

@@ -2,6 +2,7 @@ import json
 import os
 import boto3
 
+
 def lambda_handler(event, context):
     """
     Loads aggregated data (nsw_suburb_disaster_rankings.json) from S3,
@@ -10,7 +11,9 @@ def lambda_handler(event, context):
     """
     s3 = boto3.client("s3")
     bucket_name = os.environ.get("S3_BUCKET")
-    rankings_key = os.environ.get("RANKINGS_KEY", "nsw_suburb_disaster_rankings.json")
+    rankings_key = os.environ.get(
+        "RANKINGS_KEY",
+        "nsw_suburb_disaster_rankings.json")
 
     requested_suburb = event.get("suburb")
     include_highest = event.get("includeHighest", False)
@@ -47,7 +50,8 @@ def lambda_handler(event, context):
 
     # Basic validation
     if not isinstance(rankings_data, list):
-        error_response = {"error": "Invalid format of the rankings file (expected a JSON list)."}
+        error_response = {
+            "error": "Invalid format of the rankings file (expected a JSON list)."}
         if "httpMethod" in event or "rawPath" in event:
             return {
                 "statusCode": 500,
