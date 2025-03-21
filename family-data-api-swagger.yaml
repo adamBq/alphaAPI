@@ -1,8 +1,10 @@
 openapi: 3.0.0
 info:
   title: Family Census Data API
-  description: API for retrieving family composition and population data for a given suburb.
-  version: 1.0.0
+  description: >
+    API for retrieving family composition and population data for a given suburb,
+    and for triggering the data collection of ABS DataPacks for NSW.
+  version: 1.1.0
 
 servers:
   - url: https://tzeks84nk6.execute-api.ap-southeast-2.amazonaws.com/test/family/
@@ -59,7 +61,7 @@ paths:
                 total_one_parent_families: "1,399"
                 other_family: "360"
         400:
-          description: Bad Request – e.g. suburb not provided or invalid format.
+          description: Bad Request – e.g., suburb not provided or invalid.
           content:
             application/json:
               schema:
@@ -70,7 +72,7 @@ paths:
               example:
                 error: "No suburb provided in event"
         404:
-          description: Not Found – The provided suburb was not found in the data.
+          description: Not Found – The provided suburb was not found.
           content:
             application/json:
               schema:
@@ -90,7 +92,7 @@ paths:
                   error:
                     type: string
               example:
-                error: "Error processing the request: [detailed error message]"
+                error: "An error occurred: <detailed error message>"
 
   /family/population/{suburb}:
     get:
@@ -124,7 +126,7 @@ paths:
                 male: "23,365"
                 female: "22,229"
         400:
-          description: Bad Request – e.g. suburb not provided or invalid.
+          description: Bad Request – e.g., suburb not provided or invalid.
           content:
             application/json:
               schema:
@@ -135,7 +137,7 @@ paths:
               example:
                 error: "No suburb provided in event"
         404:
-          description: Not Found – The suburb was not found in the data.
+          description: Not Found – The suburb was not found.
           content:
             application/json:
               schema:
@@ -155,4 +157,45 @@ paths:
                   error:
                     type: string
               example:
-                error: "Error processing the request: [detailed error message]"
+                error: "An error occurred: <detailed error message>"
+
+  /collector:
+    post:
+      summary: Trigger the ABS datapack collector
+      description: >
+        Triggers the collector function which downloads the most recent ABS DataPack
+        for suburb and localities (SAL) for NSW and uploads the ZIP file to S3.
+      responses:
+        200:
+          description: Data collection and processing completed successfully.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+              example:
+                message: "Successfully downloaded and uploaded the ABS datapack to s3"
+        400:
+          description: Bad Request – e.g., required parameters missing (if applicable).
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: "Missing required parameters."
+        500:
+          description: Internal Server Error – An error occurred during data collection.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: "Error processing the datapack: <detailed error message>"
