@@ -7,7 +7,7 @@ from io import StringIO
 
 s3_client = boto3.client('s3')
 
-S3_BUCKET_NAME = 'paige-3011'
+S3_BUCKET_NAME = 'family-data-alpha'
 S3_CSV_KEY = '2021Census_G01_NSW_SAL.csv'
 S3_CODES_KEY = 'suburb_codes.py'
 
