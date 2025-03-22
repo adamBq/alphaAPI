@@ -4,7 +4,7 @@ info:
   description: Provides historical and real-time extreme weather data based on NSW natural disaster declarations.
   version: 1.0.0
 servers:
-  - url: https://r69rgp99vg.execute-api.ap-southeast-2.amazonaws.com/dev
+  - url: https://m42dj4mgj8.execute-api.ap-southeast-2.amazonaws.com/prod
     description: Production Server
 
 paths:
