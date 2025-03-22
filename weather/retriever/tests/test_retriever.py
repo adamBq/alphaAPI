@@ -73,9 +73,11 @@ def test_retriever_success_proxy(s3_setup, set_env_vars):
     Simulate an API Gateway proxy call with 'httpMethod'.
     """
     event = {
-        "suburb": "Shoalhaven",
-        "includeHighest": True,
-        "httpMethod": "GET"
+        "httpMethod": "GET",
+        "body": json.dumps({
+            "suburb": "Shoalhaven",
+            "includeHighest": True
+        })
     }
     context = {}
     response = lambda_handler(event, context)
@@ -87,6 +89,7 @@ def test_retriever_success_proxy(s3_setup, set_env_vars):
     assert body["status"] == "success"
     assert body["requestedSuburbData"]["suburb"] == "Shoalhaven"
     assert body["highestSuburbData"]["suburb"] == "Shoalhaven"
+
 
 
 def test_retriever_not_found(s3_setup, set_env_vars):
