@@ -1,5 +1,6 @@
-# Use AWS Lambda base image for Python 3.9
-FROM public.ecr.aws/lambda/python:3.12
+ARG PLATFORM=linux/amd64
+
+FROM --platform=${PLATFORM} public.ecr.aws/lambda/python:3.12
 
 # Copy function code
 COPY collector.py ./
