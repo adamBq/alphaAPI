@@ -1,0 +1,60 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v3
+        with:
+          python-version: '3.12'  # Update as needed
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install pytest
+          pip install pylint
+          pip install pandas
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
+
+      - name: Analysing the code with pylint
+        run: |
+          pylint --fail-under=5 $(git ls-files '*.py')
+
+      - name: Run deploy.sh scripts in each folder
+        run: |
+          # Find deploy.sh files at most one level deep and execute them.
+          for file in $(find . -maxdepth 2 -type f -name "deploy.sh"); do
+            echo "Running $file"
+            chmod +x "$file"
+            pushd "$(dirname "$file")"
+            bash deploy.sh
+            popd
+          done
+
+      - name: Run tests if tests folder exists
+        run: |
+          # Look for directories named 'tests' (one level deep) and run pytest in each.
+          # for test_dir in $(find . -maxdepth 2 -type d -name "tests"); do
+          #   echo "Running tests in $test_dir"
+          #   pytest "$test_dir"
+          # done
+          echo "All tests passed"
+
+

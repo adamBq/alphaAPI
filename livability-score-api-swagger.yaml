@@ -8,9 +8,9 @@ info:
     and returns a detailed breakdown for each category.
   version: "1.0.0"
 servers:
-  - url: https://api.yourdomain.com/v1
+  - url: https://m42dj4mgj8.execute-api.ap-southeast-2.amazonaws.com/prod/
 paths:
-  /livability:
+  /livability_score:
     post:
       summary: Calculate Livability Score
       description: >
@@ -41,15 +41,11 @@ paths:
                       type: number
                       description: "Weight for weather/disaster risks."
                       example: 0.7
-                    public_transportation:
+                    publicTransportation:
                       type: number
                       description: "Weight for access to public transportation."
                       example: 0.6
-                    shopping:
-                      type: number
-                      description: "Weight for access to shopping centers."
-                      example: 0.5
-                    family_demographics:
+                    familyDemographics:
                       type: number
                       description: "Weight for family demographics suitability."
                       example: 0.9
@@ -67,31 +63,27 @@ paths:
                   overall_score:
                     type: number
                     description: "Aggregated livability score based on provided inputs."
-                    example: 75.3
+                    example: 7.53
                   breakdown:
                     type: object
                     description: "Detailed score breakdown for each factor."
                     properties:
-                      crime:
+                      crimeScore:
                         type: number
                         description: "Score for crime statistics."
-                        example: 70
-                      weather:
+                        example: 7.22
+                      weatherScore:
                         type: number
                         description: "Score for weather/disaster risk."
-                        example: 80
-                      public_transportation:
+                        example: 8.01
+                      transportScore:
                         type: number
                         description: "Score for public transportation access."
-                        example: 65
-                      shopping:
-                        type: number
-                        description: "Score for shopping center access."
-                        example: 60
-                      family_demographics:
+                        example: 6.53
+                      familyScore:
                         type: number
                         description: "Score for family demographics suitability."
-                        example: 85
+                        example: 8.57
         '400':
           description: Invalid input parameters.
           content:

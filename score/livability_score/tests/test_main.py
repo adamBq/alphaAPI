@@ -1,12 +1,17 @@
+from main import family_score, crime_score, weather_score, transport_score, handler
 import pytest
 import requests
 import sys
 import os
 from unittest.mock import patch, MagicMock
 
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
+sys.path.insert(
+    0,
+    os.path.abspath(
+        os.path.join(
+            os.path.dirname(__file__),
+            "..")))
 
-from main import family_score, crime_score, weather_score, transport_score, handler
 
 @patch('main.requests.get')
 def test_family_score(mock_requests_get):
@@ -16,10 +21,11 @@ def test_family_score(mock_requests_get):
         "coupleFamilyWithChildrenUnder15": 1000,
         "oneParentWithChildrenUnder15": 500,
         "totalFamilies": 3000
-    } 
+    }
     mock_requests_get.return_value = mock_response
     print(family_score("TestSuburb"))
     assert family_score("TestSuburb") == pytest.approx(10.0)
+
 
 @patch('main.requests.get')
 def test_crime_score(mock_requests_get):
@@ -42,77 +48,60 @@ def test_crime_score(mock_requests_get):
         "totalPopulation": 5  # Example population
     }
 
-    mock_requests_get.side_effect = [mock_crime_response, mock_population_response]
+    mock_requests_get.side_effect = [
+        mock_crime_response,
+        mock_population_response]
 
-    assert crime_score("TestSuburb") == pytest.approx(10 * (( - 3 / 12.5) + 1))
+    assert crime_score("TestSuburb") == pytest.approx(10 * ((- 3 / 12.5) + 1))
+
 
 @patch('main.requests.post')
 def test_weather_score(mock_requests_post):
     mock_response = MagicMock()
     mock_response.status_code = 200
-    mock_response.json.return_value = {"body": "{\"requestedSuburbData\": {\"occurrences\": 5}, \"highestSuburbData\": {\"occurrences\": 10}}"}
+    mock_response.json.return_value = {
+        "body": "{\"requestedSuburbData\": {\"occurrences\": 5}, \"highestSuburbData\": {\"occurrences\": 10}}"}
     mock_requests_post.return_value = mock_response
 
     assert isinstance(weather_score("TestSuburb"), float)
+
 
 @patch('main.requests.get')
 @patch('main.requests.post')
 def test_transport_score(mock_requests_post, mock_requests_get):
     mock_geo_response = MagicMock()
     mock_geo_response.status_code = 200
-    mock_geo_response.json.return_value = {"results": [{"geometry": {"location": {"lat": -33.86785, "lng": 151.20732}}}]}
+    mock_geo_response.json.return_value = {"results": [
+        {"geometry": {"location": {"lat": -33.86785, "lng": 151.20732}}}]}
     mock_requests_get.return_value = mock_geo_response
 
     mock_bus_response = MagicMock()
     mock_bus_response.status_code = 200
-    mock_bus_response.json.return_value = {"places": [{"location": {"latitude": -33.86785, "longitude": 151.20732}}]}
+    mock_bus_response.json.return_value = {"places": [
+        {"location": {"latitude": -33.86785, "longitude": 151.20732}}]}
 
     mock_train_response = MagicMock()
     mock_train_response.status_code = 200
-    mock_train_response.json.return_value = {"places": [{"location": {"latitude": -33.86785, "longitude": 151.20732}}]}
+    mock_train_response.json.return_value = {"places": [
+        {"location": {"latitude": -33.86785, "longitude": 151.20732}}]}
     mock_requests_post.side_effect = [mock_bus_response, mock_train_response]
 
     score = transport_score("Test Address")
 
     assert 0.0 <= score <= 10.0
 
-@patch('main.requests.get')
-@patch('main.transport_score')
-@patch('main.crime_score')
-@patch('main.weather_score')
-@patch('main.family_score')
-def test_handler(mock_family, mock_weather, mock_crime, mock_transport, mock_requests_get):
-    mock_geo_response = MagicMock()
-    mock_geo_response.status_code = 200
-    mock_geo_response.return_value = {
-        "results": [{
-            "address_components": [{"long_name": "TestSuburb", "types": ["locality"]}]
-        }]
-    }
-    mock_requests_get.return_value = mock_geo_response
-    
-    mock_family.return_value = 7.0
-    mock_weather.return_value = 6.0
-    mock_crime.return_value = 5.0
-    mock_transport.return_value = 8.0
-    
-    event = {
-        "address": "Test Address",
-        "weights": {"publicTransportation": 0.3, "crime": 0.3, "weather": 0.2, "familyDemographics": 0.2}
-    }
-    
-    response = handler(event, None)
-    
-    assert response["statusCode"] == 200
-    assert response["body"]["overallScore"] == (0.3 * 8.0) + (0.3 * 5.0) + (0.2 * 6) + (0.2 * 7.0)
-    assert "breakdown" in response["body"]
 
 @patch('main.requests.get')
 @patch('main.transport_score')
 @patch('main.crime_score')
 @patch('main.weather_score')
 @patch('main.family_score')
-def test_handler_fail(mock_family, mock_weather, mock_crime, mock_transport, mock_requests_get):
+def test_handler(
+        mock_family,
+        mock_weather,
+        mock_crime,
+        mock_transport,
+        mock_requests_get):
     mock_geo_response = MagicMock()
     mock_geo_response.status_code = 200
     mock_geo_response.return_value = {
@@ -121,19 +110,63 @@ def test_handler_fail(mock_family, mock_weather, mock_crime, mock_transport, moc
         }]
     }
     mock_requests_get.return_value = mock_geo_response
-    
+
+    mock_family.return_value = 7.0
+    mock_weather.return_value = 6.0
+    mock_crime.return_value = 5.0
+    mock_transport.return_value = 8.0
+
+    event = {
+        "address": "Test Address",
+        "weights": {
+            "publicTransportation": 0.3,
+            "crime": 0.3,
+            "weather": 0.2,
+            "familyDemographics": 0.2}}
+
+    response = handler(event, None)
+
+    assert response["statusCode"] == 200
+    assert response["body"]["overallScore"] == (
+        0.3 * 8.0) + (0.3 * 5.0) + (0.2 * 6) + (0.2 * 7.0)
+    assert "breakdown" in response["body"]
+
+
+@patch('main.requests.get')
+@patch('main.transport_score')
+@patch('main.crime_score')
+@patch('main.weather_score')
+@patch('main.family_score')
+def test_handler_fail(
+        mock_family,
+        mock_weather,
+        mock_crime,
+        mock_transport,
+        mock_requests_get):
+    mock_geo_response = MagicMock()
+    mock_geo_response.status_code = 200
+    mock_geo_response.return_value = {
+        "results": [{
+            "address_components": [{"long_name": "TestSuburb", "types": ["locality"]}]
+        }]
+    }
+    mock_requests_get.return_value = mock_geo_response
+
     mock_family.return_value = 7.0
     mock_weather.return_value = 6.0
     mock_crime.return_value = 5.0
     mock_transport.return_value = None
-    
+
     event = {
         "address": "Test Address",
-        "weights": {"publicTransportation": 0.3, "crime": 0.3, "weather": 0.2, "familyDemographics": 0.2}
-    }
-    
+        "weights": {
+            "publicTransportation": 0.3,
+            "crime": 0.3,
+            "weather": 0.2,
+            "familyDemographics": 0.2}}
+
     response = handler(event, None)
-    
+
     assert response["statusCode"] == 500
 
 

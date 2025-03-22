@@ -15,8 +15,7 @@ def lambda_handler(event, context):
     # 1) Figure out where the input (suburb, includeHighest) is
     # -------------------------------------------------------
     if "httpMethod" in event or "rawPath" in event:
-        # This is an API Gateway (or Lambda URL) invocation
-        # event["body"] might contain a JSON string
+        # This is an API Gateway or Lambda URL invocation
         body = {}
         if "body" in event and event["body"]:
             try:

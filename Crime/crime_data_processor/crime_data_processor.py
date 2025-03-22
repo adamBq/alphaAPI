@@ -13,15 +13,24 @@ dlq_url = "https://sqs.us-east-1.amazonaws.com/216989131264/CrimeDataProcessingD
 
 table = dynamodb.Table(dynamodb_table_name)
 
+CORS_HEADERS = {
+    "Access-Control-Allow-Origin": "*",
+    "Access-Control-Allow-Headers": "*",
+    "Access-Control-Allow-Methods": "GET,POST,OPTIONS",
+}
+
+
 def send_to_dlq(suburb):
     """
     Sends failed suburb processing jobs to the Dead Letter Queue
     """
     try:
-        sqs.send_messaeg(QueueUrl=dlq_url, MessageBody=json.dumps({"suburb" : suburb}))
+        sqs.send_messaeg(QueueUrl=dlq_url,
+                         MessageBody=json.dumps({"suburb": suburb}))
         print(f"Sent message to DLQ for suburb: {suburb}")
     except Exception as e:
         print(f"Error sending message to DLQ: {e}")
+
 
 def fetch_suburb_data(suburb):
     """
@@ -39,15 +48,16 @@ def fetch_suburb_data(suburb):
         print(f"Unexpected error fetching data for {suburb}: {e}")
         return None
 
+
 def process_and_store_crime_data(df):
     """
     Processes the crime data and stores it in DynamoDB
     """
     try:
         df = df.rename(columns={
-            "Suburb" : "suburb",
-            "Offence Category" : "crime_type",
-            "Subcategory" : "sub_crime_type",
+            "Suburb": "suburb",
+            "Offence Category": "crime_type",
+            "Subcategory": "sub_crime_type",
         })
 
         suburbs = df["suburb"].unique()
@@ -59,7 +69,7 @@ def process_and_store_crime_data(df):
 
         for suburb in suburbs:
             suburb_df = df[df["suburb"] == suburb]
-            
+
             crime_summary = {}
             crime_trends = {}
             total_num_crimes = 0
@@ -71,7 +81,7 @@ def process_and_store_crime_data(df):
                 total_num_crimes += total_num
 
                 if crime_type not in crime_summary:
-                    crime_summary[crime_type] = {"totalNum" : 0}
+                    crime_summary[crime_type] = {"totalNum": 0}
                 crime_summary[crime_type]["totalNum"] += total_num
 
                 if pd.notna(sub_crime_type):
@@ -80,9 +90,12 @@ def process_and_store_crime_data(df):
                     crime_summary[crime_type][sub_crime_type] += total_num
 
                     # Build crime trends
-                    yearly_totals = {year: int(row[[col for col in month_cols if col.endswith(str(year))]].sum()) for year in years}
-                    trend_df = pd.DataFrame(yearly_totals.items(), columns=["Year", "TotalCrimes"])
-                    trend_df["Year"]  = trend_df["Year"].astype(int)
+                    yearly_totals = {year: int(
+                        row[[col for col in month_cols if col.endswith(str(year))]].sum()) for year in years}
+                    trend_df = pd.DataFrame(
+                        yearly_totals.items(), columns=[
+                            "Year", "TotalCrimes"])
+                    trend_df["Year"] = trend_df["Year"].astype(int)
 
                     if len(trend_df) > 1:
                         x = trend_df["Year"]
@@ -91,9 +104,11 @@ def process_and_store_crime_data(df):
 
                         first_year = trend_df.iloc[0]["TotalCrimes"]
                         last_year = trend_df.iloc[-1]["TotalCrimes"]
-                        trend_percentage = ((last_year - first_year) . max(first_year, 1)) * 100
+                        trend_percentage = (
+                            (last_year - first_year) . max(first_year, 1)) * 100
 
-                        trend_df["MovingAvg"] = trend_df["TotalCrimes"].rolling(window=min(5, len(trend_df)), min_periods=1).mean()
+                        trend_df["MovingAvg"] = trend_df["TotalCrimes"].rolling(
+                            window=min(5, len(trend_df)), min_periods=1).mean()
 
                         if trend_percentage > 5:
                             trend_category = "Increasing"
@@ -101,26 +116,27 @@ def process_and_store_crime_data(df):
                             trend_category = "Decreasing"
                         else:
                             trend_category = "Stable"
-                        
+
                         crime_trends.setdefault(crime_type, {})[sub_crime_type] = {
-                            "trendSlope" : float(round(slope, 2)),
-                            "trendPercentage" : float(round(trend_percentage, 2)),
-                            "movingAvg" : float(round(trend_df["MovingAvg"].iloc[-1], 2)),
-                            "trendCategory" : trend_category
+                            "trendSlope": float(round(slope, 2)),
+                            "trendPercentage": float(round(trend_percentage, 2)),
+                            "movingAvg": float(round(trend_df["MovingAvg"].iloc[-1], 2)),
+                            "trendCategory": trend_category
                         }
                     else:
-                        crime_trends.setdefault(crime_type, {})[sub_crime_type] = {
+                        crime_trends.setdefault(
+                            crime_type,
+                            {})[sub_crime_type] = {
                             "trendSlope": None,
                             "trendPercentage": None,
                             "movingAvg": None,
-                            "trendCategory": "not enough data"
-                        }
+                            "trendCategory": "not enough data"}
             item = {
-                "suburb" : suburb,
-                "totalNumCrimes" : total_num_crimes,
-                "crimeSummary" : json.dumps(crime_summary),
-                "crimeTrends" : json.dumps(crime_trends)
-            }           
+                "suburb": suburb,
+                "totalNumCrimes": total_num_crimes,
+                "crimeSummary": json.dumps(crime_summary),
+                "crimeTrends": json.dumps(crime_trends)
+            }
 
             table.put_item(Item=item)
             print(f"Stored data for {suburb} in DynamoDB")
@@ -128,6 +144,7 @@ def process_and_store_crime_data(df):
     except Exception as e:
         print(f"Error processing data: {e}")
         return None
+
 
 def lambda_handler(event, context):
     """
@@ -156,12 +173,15 @@ def lambda_handler(event, context):
         except Exception as e:
             print(f"Error processing record: {e}")
             failed_suburbs.extend(suburbs)
-    
+
     if failed_suburbs:
         print(f"Sending failed suburbs to DLQ: {failed_suburbs}")
         for suburb in failed_suburbs:
             send_to_dlq(suburb)
     else:
         print(f"No failed suburbs")
-    
-    return {"statusCode" : 200, "body" : "Data processed successfully"}
+
+    return {
+        "statusCode": 200,
+        "headers": CORS_HEADERS,
+        "body": "Data processed successfully"}

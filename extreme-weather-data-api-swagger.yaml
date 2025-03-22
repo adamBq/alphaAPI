@@ -4,32 +4,12 @@ info:
   description: Provides historical and real-time extreme weather data based on NSW natural disaster declarations.
   version: 1.0.0
 servers:
-  - url: https://api.yourdomain.com
+  - url: https://r69rgp99vg.execute-api.ap-southeast-2.amazonaws.com/dev
     description: Production Server
 
 paths:
-  /data/collect:
-    post:
-      summary: Triggers data collection and processing
-      description: >
-        Scrapes the latest NSW natural disaster declarations, aggregates it with pre-stored historical data, 
-        and processes it for analysis.
-      operationId: collectData
-      responses:
-        "200":
-          description: Data collection and processing completed successfully.
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  message:
-                    type: string
-                    example: "Data collection and processing completed successfully."
-        "500":
-          description: Internal server error
 
-  /data/suburb:
+  /suburb:
     post:
       summary: Retrieve extreme weather trends for a given suburb
       description: >
