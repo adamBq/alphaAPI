@@ -4,7 +4,7 @@ import requests
 import boto3
 from bs4 import BeautifulSoup
 
-S3_BUCKET = os.environ.get("S3_BUCKET", "paige-3011")
+S3_BUCKET = os.environ.get("S3_BUCKET", "family-data-alpha")
 S3_KEY = os.environ.get("S3_KEY", "abs_datapack_nsw.zip")
 
 s3_client = boto3.client("s3")
