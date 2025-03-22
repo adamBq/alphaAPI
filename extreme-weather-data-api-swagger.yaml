@@ -9,7 +9,7 @@ servers:
 
 paths:
 
-  /suburb:
+  /data/weather/suburb:
     post:
       summary: Retrieve extreme weather trends for a given suburb
       description: >
