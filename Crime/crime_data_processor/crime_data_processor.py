@@ -7,9 +7,10 @@ s3 = boto3.client("s3")
 dynamodb = boto3.resource("dynamodb")
 sqs = boto3.client("sqs")
 
-s3_bucket_name = "crimedataraw"
-dynamodb_table_name = "CrimeData"
-dlq_url = "https://sqs.us-east-1.amazonaws.com/216989131264/CrimeDataProcessingDLQ"
+s3_bucket_name = "crime-data-bucket-raw-data"
+dynamodb_table_name = "crime-data"
+dlq_url = "https://sqs.ap-southeast-2.amazonaws.com/522814692697/crime-data-processing-dlq"
+dlq_arn = "arn:aws:sqs:ap-southeast-2:522814692697:crime-data-processing-dlq"
 
 table = dynamodb.Table(dynamodb_table_name)
 
@@ -25,8 +26,7 @@ def send_to_dlq(suburb):
     Sends failed suburb processing jobs to the Dead Letter Queue
     """
     try:
-        sqs.send_messaeg(QueueUrl=dlq_url,
-                         MessageBody=json.dumps({"suburb": suburb}))
+        sqs.send_message(QueueUrl=dlq_url, MessageBody=json.dumps({"suburb" : suburb}))
         print(f"Sent message to DLQ for suburb: {suburb}")
     except Exception as e:
         print(f"Error sending message to DLQ: {e}")
@@ -55,13 +55,13 @@ def process_and_store_crime_data(df):
     """
     try:
         df = df.rename(columns={
-            "Suburb": "suburb",
-            "Offence Category": "crime_type",
-            "Subcategory": "sub_crime_type",
+            "Suburb" : "suburb",
+            "Offence category" : "crime_type",
+            "Subcategory" : "sub_crime_type",
         })
 
         suburbs = df["suburb"].unique()
-        month_cols = [col for col in df.columns if col.startsWith((
+        month_cols = [col for col in df.columns if col.startswith((
             "Jan", "Feb", "Mar", "Apr", "May", "Jun",
             "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
         ))]
@@ -77,7 +77,7 @@ def process_and_store_crime_data(df):
             for _, row in suburb_df.iterrows():
                 crime_type = row["crime_type"]
                 sub_crime_type = row["sub_crime_type"]
-                total_num = int(row(month_cols).sum())
+                total_num = int(row[month_cols].sum())
                 total_num_crimes += total_num
 
                 if crime_type not in crime_summary:
@@ -86,16 +86,33 @@ def process_and_store_crime_data(df):
 
                 if pd.notna(sub_crime_type):
                     if sub_crime_type not in crime_summary[crime_type]:
-                        crime_summary[crime_type][sub_crime_type] = 0
-                    crime_summary[crime_type][sub_crime_type] += total_num
+                        crime_summary[crime_type][sub_crime_type] = {"totalNum" : 0}
+                    crime_summary[crime_type][sub_crime_type]["totalNum"] += total_num
+
+                    # Add per-year & per-month data
+                    for year in years:
+                        year_cols = [col for col in month_cols if col.endswith(str(year))]
+                        per_year_total = int(row[year_cols].sum())
+
+                        if year not in crime_summary[crime_type][sub_crime_type]:
+                            crime_summary[crime_type][sub_crime_type][year] = {"totalNum": 0}
+
+                        crime_summary[crime_type][sub_crime_type][year]["totalNum"] += per_year_total
+
+                        # Add per-month data
+                        for month_col in year_cols:
+                            month = month_col.split()[0]  # Extract month name
+                            per_month_count = int(row[month_col])
+
+                            if month not in crime_summary[crime_type][sub_crime_type][year]:
+                                crime_summary[crime_type][sub_crime_type][year][month] = 0
+
+                            crime_summary[crime_type][sub_crime_type][year][month] += per_month_count
 
                     # Build crime trends
-                    yearly_totals = {year: int(
-                        row[[col for col in month_cols if col.endswith(str(year))]].sum()) for year in years}
-                    trend_df = pd.DataFrame(
-                        yearly_totals.items(), columns=[
-                            "Year", "TotalCrimes"])
-                    trend_df["Year"] = trend_df["Year"].astype(int)
+                    yearly_totals = {year: int(row[[col for col in month_cols if col.endswith(str(year))]].sum()) for year in years}
+                    trend_df = pd.DataFrame(list(yearly_totals.items()), columns=["Year", "TotalCrimes"])
+                    trend_df["Year"]  = trend_df["Year"].astype(int)
 
                     if len(trend_df) > 1:
                         x = trend_df["Year"]
@@ -104,8 +121,7 @@ def process_and_store_crime_data(df):
 
                         first_year = trend_df.iloc[0]["TotalCrimes"]
                         last_year = trend_df.iloc[-1]["TotalCrimes"]
-                        trend_percentage = (
-                            (last_year - first_year) . max(first_year, 1)) * 100
+                        trend_percentage = ((last_year - first_year) / max(first_year, 1)) * 100
 
                         trend_df["MovingAvg"] = trend_df["TotalCrimes"].rolling(
                             window=min(5, len(trend_df)), min_periods=1).mean()
@@ -152,7 +168,15 @@ def lambda_handler(event, context):
     and saves it to DynamoDB.
     """
     failed_suburbs = []
-
+    print(f"event: {event}")
+    # Detect if triggered by DLQ
+    use_dlq = True  
+    for record in event["Records"]:
+        if record.get("eventSourceARN") == dlq_arn:
+            use_dlq = False
+            break
+    
+    suburbs = []
     for record in event["Records"]:
         try:
             message = json.loads(record["body"])
@@ -168,13 +192,13 @@ def lambda_handler(event, context):
 
                 result = process_and_store_crime_data(df)
 
-                if not result["jobSuccess"]:
+                if not result:
                     failed_suburbs.append(suburb)
         except Exception as e:
             print(f"Error processing record: {e}")
             failed_suburbs.extend(suburbs)
-
-    if failed_suburbs:
+    
+    if failed_suburbs and use_dlq:
         print(f"Sending failed suburbs to DLQ: {failed_suburbs}")
         for suburb in failed_suburbs:
             send_to_dlq(suburb)
