@@ -106,7 +106,12 @@ def _maybe_proxy_response(event, payload, status_code):
     if "httpMethod" in event or "rawPath" in event:
         return {
             "statusCode": status_code,
-            "headers": {"Content-Type": "application/json"},
+            "headers": {
+                "Content-Type": "application/json",
+                "Access-Control-Allow-Origin": "*",  
+                "Access-Control-Allow-Methods": "POST, OPTIONS",
+                "Access-Control-Allow-Headers": "*"
+            },
             "body": json.dumps(payload)
         }
     else:

@@ -5,7 +5,7 @@ from haversine import haversine, Unit
 
 API_KEY = "AIzaSyDcgohncbfmx_hw2MzwMTIe8jRqFRtgQ5c"
 
-dynamodb = boto3.resource('dynamodb')
+# dynamodb = boto3.resource('dynamodb')
 
 
 def family_score(suburb):
@@ -220,12 +220,18 @@ def transport_score(address):
 
 
 def handler(event, context):
+    cors_headers = {
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Headers": "*",
+        "Access-Control-Allow-Methods": "OPTIONS,POST,GET"
+    }
     address = event.get("address", None)
     weights = event.get("weights", None)
 
     if address is None or weights is None:
         return {
             "statusCode": 400,
+            "headers": cors_headers,
             "body": "Invalid Address"
         }
 
@@ -247,6 +253,7 @@ def handler(event, context):
     else:
         return {
             "statusCode": 400,
+            "headers": cors_headers,
             "body": "Invalid address"
         }
 
@@ -264,11 +271,13 @@ def handler(event, context):
         if value is None:
             return {
                 "statusCode": 500,
+                "headers": cors_headers,
                 "body": f"Unable to generate {key} score"
             }
 
     return {
         "statusCode": 200,
+        "headers": cors_headers,
         "body": {
             "overallScore": round(
                 weights.get(

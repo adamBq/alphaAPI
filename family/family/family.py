@@ -90,6 +90,11 @@ def lambda_handler(event, context):
         if not suburb:
             return {
                 "statusCode": 400,
+                "headers": {
+                    "Access-Control-Allow-Origin": "*",  
+                    "Access-Control-Allow-Methods": "GET, OPTIONS",
+                    "Access-Control-Allow-Headers": "*"
+                },
                 "body": json.dumps({"error": "No suburb provided in event"})
             }
 
@@ -100,15 +105,32 @@ def lambda_handler(event, context):
         ):
             return {
                 "statusCode": 404,
+                "headers": {
+                    "Access-Control-Allow-Origin": "*",  
+                    "Access-Control-Allow-Methods": "GET, OPTIONS",
+                    "Access-Control-Allow-Headers": "*"
+                },
                 "body": response_json
             }
         return {
             "statusCode": 200,
+            "headers": {
+                "Access-Control-Allow-Origin": "*",  
+                "Access-Control-Allow-Methods": "GET, OPTIONS",
+                "Access-Control-Allow-Headers": "*"
+            },
             "body": response_json
         }
     except Exception as e:
         print(f"Error: {e}")
-        return {"statusCode": 500, "body": json.dumps(
+        return {
+            "statusCode": 500,
+            "headers": {
+                "Access-Control-Allow-Origin": "*",  
+                "Access-Control-Allow-Methods": "GET, OPTIONS",
+                "Access-Control-Allow-Headers": "*"
+            },
+            "body": json.dumps(
             {"error": f"Error processing the request: {str(e)}"})}
 
 
