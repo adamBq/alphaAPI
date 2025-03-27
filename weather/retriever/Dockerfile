@@ -1,17 +1,10 @@
-# --------------------------------------------------------
-#  Dockerfile for retrieving & returning data (Python 3.12)
-# --------------------------------------------------------
-    FROM public.ecr.aws/lambda/python:3.12
+ARG PLATFORM=linux/amd64
 
-    WORKDIR /var/task
-    
-    # 1) Copy requirements and install
-    COPY requirements.txt .
-    RUN pip install -r requirements.txt
-    
-    # 2) Copy app.py
-    COPY app.py .
-    
-    # 3) For AWS Lambda, define CMD as module.function
-    CMD ["app.lambda_handler"]
-    
+FROM --platform=${PLATFORM} public.ecr.aws/lambda/python:3.12
+
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt --target /opt/python
+
+COPY retriever.py ./
+
+CMD [ "retriever.lambda_handler" ]

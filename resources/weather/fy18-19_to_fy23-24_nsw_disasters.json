@@ -1,0 +1,704 @@
+[
+    {
+        "year": "fy-2020-21",
+        "last_updated": "2025-02-25T12:00:00Z",
+        "disasters": [
+            {
+                "AGRN": "976",
+                "disasterType": "Storm",
+                "disasterName": "NSW Storms from 10 June 2021 onwards",
+                "localGovernmentArea": "Cabonne"
+            },
+            {
+                "AGRN": "970",
+                "disasterType": "Storm and flood",
+                "disasterName": "Southern NSW Storms and Floods from 5 May 2021 onwards",
+                "localGovernmentArea": "Bega Valley\nEurobodalla\nShoalhaven\nWingecarribee"
+            },
+            {
+                "AGRN": "967",
+                "disasterType": "Storm",
+                "disasterName": "Snowy Valleys Storms from\n3 February 2021 onwards",
+                "localGovernmentArea": "Snowy Valleys"
+            },
+            {
+                "AGRN": "960",
+                "disasterType": "Storm and flood",
+                "disasterName": "NSW Storms and Floods 10 March 2021 onwards",
+                "localGovernmentArea": "Armidale\nBallina\nBathurst\nBega Valley\nBellingen\nBlacktown\nBlue Mountains\nBogan\nBrewarinna\u00a0\nByron\nCabonne\nCamden\nCampbelltown\nCanterbury Bankstown\nCentral Coast\nCentral Darling\nCessnock City Council\nClarence Valley\nCobar\nCoffs Harbour City\nCoonamble\nCumberland\nDungog Shire\nEurobodalla\nFairfield\nGeorges River\nGilgandra\u00a0\nGlen Innes Severn\nGoulburn Mulwaree\nGreater Hume\nGunnedah\nGwydir\nHawkesbury\nHornsby\nHunters Hill\nInner West\nInverell\nKempsey\nKu-ring-gai\nKyogle\nLachlan\nLake Macquarie City\nLismore\nLithgow\nLiverpool\nLiverpool Plains\nMaitland City\nMid-Coast\nMoree Plains\nMuswellbrook\nNambucca Valley\nNarrabri\nNarromine\nNewcastle City\nNorthern Beaches\nOberon\nParramatta\nPenrith\nPort Macquarie-Hastings\nPort Stephens\nQueanbeyan-Palerang\u00a0\nRichmond Valley\nShoalhaven\u00a0\nSingleton\nSnowy Monaro\nSutherland\nTamworth\nTemora\nTenterfield\nThe Hills\nTweed\nUpper Lachlan\nUralla\nWalcha\nWalgett\nWarren\nWingecarribee\nWollondilly"
+            },
+            {
+                "AGRN": "959",
+                "disasterType": "Storm",
+                "disasterName": "Eurobodalla Storms from 26 December 2020 onwards",
+                "localGovernmentArea": "Eurobodalla"
+            },
+            {
+                "AGRN": "954",
+                "disasterType": "Storm and flood",
+                "disasterName": "NSW Storms and Floods:\n19 February 2021 onwards",
+                "localGovernmentArea": "Clarence Valley\u00a0\nCoffs Harbour\nKyogle\nLismore\nNambucca Valley\nPort Macquarie-Hastings\nRichmond Valley"
+            },
+            {
+                "AGRN": "948",
+                "disasterType": "Storm and flood",
+                "disasterName": "NSW Storms and Floods:\n2 January 2021 onwards",
+                "localGovernmentArea": "Glen Innes Severn\nNarromine\nParkes\nTamworth"
+            },
+            {
+                "AGRN": "943",
+                "disasterType": "Storm and flood",
+                "disasterName": "NSW Storms and Floods:\n10 December 2020 onwards",
+                "localGovernmentArea": "Armidale\nBallina\nBellingen\nByron\nClarence Valley\nCoffs Harbour\nGlen Innes Severn\nGwydir Shire (extension as at 13 February 2021)\nInverell\nKempsey\nKyogle\nLismore\nMoree Plains Shire (extension as at 13 February 2021)\nNambucca Valley\nPort Macquarie-Hastings\nRichmond Valley\u00a0\nTamworth Regional (extension as at 13 February 2021)\nTenterfield Shire (extension as at 13 March 2021)\nTweed"
+            },
+            {
+                "AGRN": "949",
+                "disasterType": "Storm",
+                "disasterName": "NSW Storms: 2 December 2020 onwards",
+                "localGovernmentArea": "Brewarrina\nGlen Innes Severn\nWarren"
+            },
+            {
+                "AGRN": "945",
+                "disasterType": "Storm",
+                "disasterName": "NSW Storms: 28 November 2020 onwards",
+                "localGovernmentArea": "Hilltops\nUpper Lachlan\nWeddin\nWingecarribee"
+            },
+            {
+                "AGRN": "936",
+                "disasterType": "Storm and flood",
+                "disasterName": "NSW storms and floods: 20 October 2020 onwards",
+                "localGovernmentArea": "Armidale\nBega Valley\u00a0\nCentral Coast\u00a0\nEurobodalla\nMid-Coast\nShoalhaven\nSnowy Valleys\nTamworth"
+            },
+            {
+                "AGRN": "938",
+                "disasterType": "Storm",
+                "disasterName": "Central NSW Storms: 18 August 2020",
+                "localGovernmentArea": "Cabonne\nOberon"
+            },
+            {
+                "AGRN": "923",
+                "disasterType": "Storm and flood",
+                "disasterName": "NSW Storms and Floods:\n5 August 2020 onwards",
+                "localGovernmentArea": "Bega Valley\u00a0\nEurobodalla\nGoulburn Mulwaree\nHilltops (extension as at 5 October 2020)\nKiama\nLiverpool (extension as at 5 October 2020)\u00a0\nOrange\nQueanbeyan-Palerang\nShellharbour\nShoalhaven\nSnowy Monaro\nSutherland\nUpper Lachlan\nWingecarribee (extension as at 5 October 2020)\nWollongong\nYass Valley"
+            },
+            {
+                "AGRN": "922",
+                "disasterType": "Storm and flood",
+                "disasterName": "NSW Storms and Floods: 25 July 2020 onwards",
+                "localGovernmentArea": "Bega Valley\nCentral Coast(extension as at 9 October 2020)\nEurobodalla\nKiama\nShellharbour\nShoalhaven\nNewcastle\nWingecarribee (extension as at 9 October 2020)"
+            }
+        ]
+    },
+    {
+        "year": "fy-2018-19",
+        "last_updated": "2025-02-25T12:00:00Z",
+        "disasters": [
+            {
+                "AGRN": "911",
+                "disasterType": "Storm and flood",
+                "disasterName": "Berrigan Shire Storms \u2013 29 June 2019 onwards",
+                "localGovernmentArea": "Berrigan"
+            },
+            {
+                "AGRN": "869",
+                "disasterType": "Flood",
+                "disasterName": "NSW \u2013 Carrathool Floods: 22 April 2019 onwards",
+                "localGovernmentArea": "Carrathool"
+            },
+            {
+                "AGRN": "868",
+                "disasterType": "Storm and flood",
+                "disasterName": "Central West and Orana Storms and Floods: 29 March 2019 onwards",
+                "localGovernmentArea": "Gilgandra\nWarrumbungle"
+            },
+            {
+                "AGRN": "864",
+                "disasterType": "Bushfire",
+                "disasterName": "Tenterfield Bushfires: 9 March 2019 onwards",
+                "localGovernmentArea": "Tenterfield"
+            },
+            {
+                "AGRN": "843",
+                "disasterType": "Bushfire",
+                "disasterName": "Northern NSW Bushfires: 11 February 2019 onwards",
+                "localGovernmentArea": "Armidale\nInverell\nKyogle\nTenterfield"
+            },
+            {
+                "AGRN": "862",
+                "disasterType": "Bushfire",
+                "disasterName": "Tamworth Regional and Upper Hunter Bushfires: 11 February 2019 onwards",
+                "localGovernmentArea": "Tamworth\u00a0\nUpper Hunter"
+            },
+            {
+                "AGRN": "867",
+                "disasterType": "Bushfire",
+                "disasterName": "Singleton and Muswellbrook Bushfires: 11 February 2019 onwards",
+                "localGovernmentArea": "Muswellbrook\nSingleton"
+            },
+            {
+                "AGRN": "861",
+                "disasterType": "Storm",
+                "disasterName": "Eastern NSW Storms: 8 February 2019 onwards",
+                "localGovernmentArea": "Cumberland\nHornsby\nLiverpool\nParramatta\nThe Hills\nWollongong"
+            },
+            {
+                "AGRN": "857",
+                "disasterType": "Storm and flood",
+                "disasterName": "Hilltops and Cootamundra-Gundagai Storms and Floods: 5 February 2019 onwards",
+                "localGovernmentArea": "Cootamundra-Gundagai\nHilltops"
+            },
+            {
+                "AGRN": "856",
+                "disasterType": "Storm",
+                "disasterName": "Parkes and Greater Hume Storms: 22 and 23 January 2019 onwards",
+                "localGovernmentArea": "Greater Hume\nParkes"
+            },
+            {
+                "AGRN": "860",
+                "disasterType": "Bushfire",
+                "disasterName": "Snowy Valleys Bushfires: 17 January 2019 onwards",
+                "localGovernmentArea": "Snowy Valleys"
+            },
+            {
+                "AGRN": "845",
+                "disasterType": "Storm and flood",
+                "disasterName": "Inland New South Wales Storms and Floods: 11 January 2019 onwards",
+                "localGovernmentArea": "Bathurst\nGoulburn Mulwaree\nHilltops\nSnowy Valleys"
+            },
+            {
+                "AGRN": "853",
+                "disasterType": "Bushfire",
+                "disasterName": "Parkes and Cabonne (Curembenya) Bushfire: 5 January 2019 onwards",
+                "localGovernmentArea": "Cabonne\nParkes"
+            },
+            {
+                "AGRN": "866",
+                "disasterType": "Bushfire",
+                "disasterName": "Newcastle (Kooragang Island) Bushfires: 5 January 2019 onwards",
+                "localGovernmentArea": "Newcastle"
+            },
+            {
+                "AGRN": "855",
+                "disasterType": "Bushfire",
+                "disasterName": "Tamworth (Halls Creek Road) Bushfire: 3 January 2019 onwards",
+                "localGovernmentArea": "Tamworth"
+            },
+            {
+                "AGRN": "851",
+                "disasterType": "Bushfire",
+                "disasterName": "Glen Innes Severn (Highland Creek) Bushfire: 25 December 2018 onwards",
+                "localGovernmentArea": "Glen Innes Severn"
+            },
+            {
+                "AGRN": "834",
+                "disasterType": "Storm and flood",
+                "disasterName": "NSW Storms and Floods: 20 December 2018",
+                "localGovernmentArea": "Armidale\nBallina\nBellingen\nBlacktown\nCamden\nCanada Bay\nCanterbury-Bankstown\nCentral Coast\u00a0\nClarence Valley\nCumberland\nDubbo\nDungog\nFairfield\nHornsby\nLithgow\nLiverpool\nMid-Coast\nMuswellbrook\nNambucca Valley\nNorthern Beaches\nParramatta\nPenrith\nRyde\nSydney\nTamworth\u00a0\nThe Hills\nUpper Hunter\nUpper Lachlan\nWalcha\nWarrumbungle\nWaverley\nWoollahra"
+            },
+            {
+                "AGRN": "833",
+                "disasterType": "Storm and flood",
+                "disasterName": "NSW Storms and Floods: 13 December 2018 onwards",
+                "localGovernmentArea": "Blacktown\nCabonne\nCampbelltown\nCanterbury-Bankstown\nClarence Valley\nHornsby\nInverell\nLachlan\nOrange\nParramatta\nRyde\nSutherland\nThe Hills\nWollondilly"
+            },
+            {
+                "AGRN": "847",
+                "disasterType": "Bushfire",
+                "disasterName": "Armidale (Melrose) Bushfire: 1 December 2018 onwards",
+                "localGovernmentArea": "Armidale"
+            },
+            {
+                "AGRN": "842",
+                "disasterType": "Bushfire",
+                "disasterName": "Port Stephens and Cessnock Bushfires: 22 November 2018 onwards",
+                "localGovernmentArea": "Cessnock\nPort Stephens"
+            },
+            {
+                "AGRN": "841",
+                "disasterType": "Bushfire",
+                "disasterName": "Tamworth (Rockview) Bushfire: 30 October 2018 onwards",
+                "localGovernmentArea": "Tamworth"
+            },
+            {
+                "AGRN": "820",
+                "disasterType": "Bushfire",
+                "disasterName": "Bega Valley and Eurobodalla bushfires: 15 August 2018 onwards",
+                "localGovernmentArea": "Bega Valley\u00a0\nEurobodalla"
+            },
+            {
+                "AGRN": "819",
+                "disasterType": "Bushfire",
+                "disasterName": "Cessnock and Port Stephens bushfires: 15 August 2018 onwards",
+                "localGovernmentArea": "Cessnock\nPort Stephens"
+            },
+            {
+                "AGRN": "824",
+                "disasterType": "Bushfire",
+                "disasterName": "Clarence Valley and Glen Innes Severn bushfires: 14 August 2018 onwards",
+                "localGovernmentArea": "Clarence Valley\nGlen Innes Severn"
+            },
+            {
+                "AGRN": "823",
+                "disasterType": "Bushfire",
+                "disasterName": "Richmond Valley, Lismore and Kyogle bushfires: 12 August 2018 onwards",
+                "localGovernmentArea": "Kyogle\nLismore\nRichmond Valley"
+            },
+            {
+                "AGRN": "818",
+                "disasterType": "Bushfire",
+                "disasterName": "Shoalhaven bushfires: 11 August 2018 onwards",
+                "localGovernmentArea": "Shoalhaven"
+            }
+        ]
+    },
+    {
+        "year": "fy-2022-23",
+        "last_updated": "2025-02-25T12:00:00Z",
+        "disasters": [
+            {
+                "AGRN": "AGRN 1066",
+                "disasterType": "NSW Bushfires",
+                "disasterName": "Upper Lachlan and Yass Valley Bushfires from 11 February 2023",
+                "localGovernmentArea": "Upper Lachlan\nYass Valley"
+            },
+            {
+                "AGRN": "AGRN 1065",
+                "disasterType": "NSW Bushfires",
+                "disasterName": "Cootamundra Gundagai Bushfires from 25 January 2023",
+                "localGovernmentArea": "Cootamundra-Gundagai"
+            },
+            {
+                "AGRN": "AGRN 1057",
+                "disasterType": "NSW Severe Weather\u00a0and Flooding",
+                "disasterName": "Cootamundra-Gundagai and Hilltops Storm and Flooding \u2013 12 March 2023",
+                "localGovernmentArea": "Cootamundra-Gundagai\nHilltops"
+            },
+            {
+                "AGRN": "AGRN 1056",
+                "disasterType": "NSW Bushfires",
+                "disasterName": "Upper Lachlan Bushfires \u2013 16 March 2023",
+                "localGovernmentArea": "Cobar\nUpper Lachlan"
+            },
+            {
+                "AGRN": "AGRN 1055",
+                "disasterType": "NSW Bushfires",
+                "disasterName": "Western and North West NSW Bushfires \u2013 17 February 2023",
+                "localGovernmentArea": "Blayney\nCabonne\nCowra\nLiverpool Plains\nUpper Hunter"
+            },
+            {
+                "AGRN": "AGRN 1054",
+                "disasterType": "NSW Bushfires",
+                "disasterName": "Gwydir, Moree Plains and Narrabri NSW Bushfires \u2013 1 March 2023",
+                "localGovernmentArea": "Gwydir Shire\nMoree Plains\nNarrabri Shire"
+            },
+            {
+                "AGRN": "AGRN 1053",
+                "disasterType": "NSW Bushfires",
+                "disasterName": "Gwydir and Narrabri NSW Bushfires \u2013 18 January 2023",
+                "localGovernmentArea": "Gwydir Shire\nNarrabri Shire"
+            },
+            {
+                "AGRN": "AGRN 1052",
+                "disasterType": "NSW Bushfires",
+                "disasterName": "NSW Bushfires 6 March 2023",
+                "localGovernmentArea": "Bathurst\nBlayney\nBogan\nBrewarrina\nCabonne\nCoonamble\nCowra\nDubbo Regional\nMid-Western\nUpper Hunter\nWalgett\nWarren"
+            },
+            {
+                "AGRN": "AGRN 1049",
+                "disasterType": "NSW Severe Weather\u00a0and Flooding",
+                "disasterName": "Dubbo and Wollongong\nSevere Storm 9\u00a0February 2023",
+                "localGovernmentArea": "Dubbo\nWollongong"
+            },
+            {
+                "AGRN": "AGRN 1047",
+                "disasterType": "NSW Severe Weather\u00a0and Flooding",
+                "disasterName": "Port Macquarie Hastings Severe Storm 3 February 2023",
+                "localGovernmentArea": "Port Macquarie Hastings"
+            },
+            {
+                "AGRN": "AGRN 1034",
+                "disasterType": "NSW Severe Weather\u00a0and Flooding",
+                "disasterName": "NSW Flooding from 14 September 2022 onwards",
+                "localGovernmentArea": "Albury\nBalranald\nBathurst\nBega Valley\nBerrigan\nBland\nBlayney\nBogan\nBourke\nBrewarrina\nCabonne\nCarrathool\nCentral Coast\nCentral Darling\nCobar\nCoolamon\nCoonamble\nCootamundra-Gundagai\nCowra\nDubbo\nEdward River\nEurobodalla\nFederation\nForbes\nGilgandra\nGlen Innes Severn\u00a0\nGoulburn Mulwaree\nGreater Hume\u00a0\nGriffith\nGunnedah\nGwydir\nHawkesbury\nHay\nHilltops\nInverell\nJunee\nLachlan\nLeeton\nKyogle\nLismore\nLithgow\nLiverpool Plains\nLockhart\nMoree Plains\nMid-Western\nMurray River\nMurrumbidgee\nMuswellbrook\nNambucca Valley\nNarrabri\nNarrandera\nNarromine\nOberon\nOrange\nParkes\nQueanbeyan-Palerang\nRichmond Valley\nShellharbour\nShoalhaven\nSnowy Monaro\nSnowy Valleys\nTamworth\nTemora\nUnincorporated Area\nUpper Hunter\nUpper Lachlan\nUralla\nWagga Wagga\nWalcha\nWalgett\nWarren\nWarrumbungle\nWeddin\nWentworth\nWingecarribee\nYass Valley"
+            },
+            {
+                "AGRN": "AGRN 1030",
+                "disasterType": "Severe Weather and Flooding",
+                "disasterName": "Southern and Central West NSW Flooding from 4 August 2022 onwards",
+                "localGovernmentArea": "Albury\nBland\nCabonne\nCarrathool\nCootamundra-Gundagai\nDubbo\nForbes\nGilgandra\nGoulburn Mulwaree\u00a0\nGriffith\u00a0\nGunnedah\nHilltop\nJunee\nLeeton\nLiverpool Plains\nMoree Plains\u00a0\nMurrumbidgee\nNarrandera\u00a0\nNarromine\nQueanbeyan-Palerang\nSnowy Monaro\nSnowy Valleys\nTemora\nWagga Wagga\nWarren\nWarrumbungle\nWeddin\nYass Valley"
+            }
+        ]
+    },
+    {
+        "year": "fy-2023-24",
+        "last_updated": "2025-02-25T12:00:00Z",
+        "disasters": [
+            {
+                "AGRN": "AGRN 1141",
+                "disasterType": "NSW Storms and floods",
+                "disasterName": "Central Darling NSW Storm 5 February \u2013 6 February 2024",
+                "localGovernmentArea": "Central Darling"
+            },
+            {
+                "AGRN": "AGRN 1140",
+                "disasterType": "NSW Bushfires",
+                "disasterName": "Singleton NSW Bushfire 8 \u2013 18 December 2023",
+                "localGovernmentArea": "Singleton"
+            },
+            {
+                "AGRN": "AGRN 1139",
+                "disasterType": "NSW Bushfires",
+                "disasterName": "Mid-Western NSW Bushfire 6 \u2013 16 December 2023",
+                "localGovernmentArea": "Mid-Western"
+            },
+            {
+                "AGRN": "AGRN 1138",
+                "disasterType": "NSW Bushfires",
+                "disasterName": "Richmond Valley NSW Bushfire 4 \u2013 15 December 2023",
+                "localGovernmentArea": "Richmond Valley"
+            },
+            {
+                "AGRN": "AGRN 1137",
+                "disasterType": "NSW Bushfires",
+                "disasterName": "Parkes NSW Bushfire 19 \u2013 27 November 2023",
+                "localGovernmentArea": "Parkes"
+            },
+            {
+                "AGRN": "AGRN 1136",
+                "disasterType": "NSW Bushfires",
+                "disasterName": "Lithgow NSW Bushfire 11 \u2013 17 November 2023",
+                "localGovernmentArea": "Lithgow"
+            },
+            {
+                "AGRN": "AGRN 1135",
+                "disasterType": "NSW Bushfires",
+                "disasterName": "Byron NSW Bushfire 14 October \u2013 5 November 2023",
+                "localGovernmentArea": "Byron"
+            },
+            {
+                "AGRN": "AGRN 1134",
+                "disasterType": "NSW Bushfires",
+                "disasterName": "Tamworth NSW Bushfire 26 October \u2013 4 November 2023",
+                "localGovernmentArea": "Tamworth"
+            },
+            {
+                "AGRN": "AGRN 1133",
+                "disasterType": "NSW Bushfires",
+                "disasterName": "Lake Macquarie NSW Bushfire 1 \u2013 18 October 2023",
+                "localGovernmentArea": "Lake Macquarie"
+            },
+            {
+                "AGRN": "AGRN 1132",
+                "disasterType": "NSW Bushfires",
+                "disasterName": "Snowy Monaro NSW Bushfire 20 September \u2013 4 October 2023",
+                "localGovernmentArea": "Snowy Monaro"
+            },
+            {
+                "AGRN": "AGRN 1131",
+                "disasterType": "NSW Bushfires",
+                "disasterName": "Upper Hunter NSW Bushfire 10 \u2013 17 August 2023",
+                "localGovernmentArea": "Upper Hunter"
+            },
+            {
+                "AGRN": "AGRN 1129",
+                "disasterType": "NSW Storms and Floods",
+                "disasterName": "NSW Severe Weather from 04 June 2024 onward",
+                "localGovernmentArea": "Camden\nCampbelltown\nGoulburn\nHawkesbury\nThe Hills\nKiama\nShellharbour\nShoalhaven\nWingecarribee\nWollondilly\nWollongong"
+            },
+            {
+                "AGRN": "AGRN 1127",
+                "disasterType": "NSW Storms and Floods",
+                "disasterName": "NSW Severe Weather from 9 May \u2013 14 May 2024",
+                "localGovernmentArea": "Central Coast\nGoulburn\nKiama"
+            },
+            {
+                "AGRN": "AGRN 1121",
+                "disasterType": "NSW Bushfires",
+                "disasterName": "Clarence Valley NSW Bushfires, 21 January \u2013 13 February 2024",
+                "localGovernmentArea": "Clarence Valley"
+            },
+            {
+                "AGRN": "AGRN 1119",
+                "disasterType": "NSW Storms and Floods",
+                "disasterName": "NSW East Coast Flooding from 1 April 2024",
+                "localGovernmentArea": "Armidale\nBlacktown\nBlue Mountains\nByron\nCamden\nCampbelltown\nCentral Coast\nClarence Valley\nDungog\nGwydir\nHawkesbury\nHornsby\nKiama \u00a0\nLake Macquarie\nLismore\nLithgow\nLiverpool\nMaitland\nMid-Coast\nMoree\nNorthern Beaches\nOberon\nPenrith\nPort Stephens\nShellharbour\nShoalhaven\nSutherland \u00a0\nThe Hills\nUpper Lachlan\nWingecarribee\nWollondilly\nWollongong\nYass Valley"
+            },
+            {
+                "AGRN": "AGRN 1114",
+                "disasterType": "NSW Bushfires",
+                "disasterName": "Inverell and Tenterfield NSW Bushfires 7 \u2013 24 December 2023",
+                "localGovernmentArea": "Inverell\nTenterfield"
+            },
+            {
+                "AGRN": "AGRN 1112",
+                "disasterType": "NSW Bushfires",
+                "disasterName": "Armidale NSW Bushfires 09 \u2013 24 December 2023",
+                "localGovernmentArea": "Armidale"
+            },
+            {
+                "AGRN": "AGRN 1105",
+                "disasterType": "NSW Storms and Floods",
+                "disasterName": "Western NSW Storms and Floods 6 January 2024",
+                "localGovernmentArea": "Bourke\nCobar"
+            },
+            {
+                "AGRN": "AGRN 1101",
+                "disasterType": "NSW Storms and Floods",
+                "disasterName": "NSW Storms and Floods 31 December 2023",
+                "localGovernmentArea": "Lismore\nTweed"
+            },
+            {
+                "AGRN": "AGRN 1100",
+                "disasterType": "NSW Storms and Floods",
+                "disasterName": "NSW Storms and Floods 25 December 2023",
+                "localGovernmentArea": "Bega Valley\nEurobodalla\nQuenbeyan-Palerang"
+            },
+            {
+                "AGRN": "AGRN 1099",
+                "disasterType": "NSW Bushfires",
+                "disasterName": "Singleton NSW Bushfires 11 September \u2013 18 October 2023",
+                "localGovernmentArea": "Singleton"
+            },
+            {
+                "AGRN": "AGRN 1093",
+                "disasterType": "NSW Bushfires",
+                "disasterName": "Narrabri\u00a0NSW Bushfires - 8\u00a0December 2023",
+                "localGovernmentArea": "Narrabri Shire"
+            },
+            {
+                "AGRN": "AGRN 1092",
+                "disasterType": "NSW Bushfires",
+                "disasterName": "Cessnock NSW Bushfires - 14 December 2023",
+                "localGovernmentArea": "Cessnock"
+            },
+            {
+                "AGRN": "AGRN 1091",
+                "disasterType": "NSW Bushfires",
+                "disasterName": "Hunter NSW\nBushfires \u2013 22 October -\u00a05 November 2023",
+                "localGovernmentArea": "Muswellbrook Upper Hunter"
+            },
+            {
+                "AGRN": "AGRN 1090",
+                "disasterType": "NSW Bushfires",
+                "disasterName": "Lower Hunter NSW\nBushfires \u2013 20 September 2023",
+                "localGovernmentArea": "Cessnock Dungog Maitland\u00a0 \u00a0 \u00a0\nPort Stephens"
+            },
+            {
+                "AGRN": "AGRN 1089",
+                "disasterType": "NSW Bushfires",
+                "disasterName": "Mid Coast NSW\nBushfires \u2013 20 September 2023",
+                "localGovernmentArea": "Mid Coast"
+            },
+            {
+                "AGRN": "AGRN 1086",
+                "disasterType": "NSW Severe Weather and Flooding",
+                "disasterName": "NSW Severe Weather and Flooding from 28 November 2023",
+                "localGovernmentArea": "Bega Valley\nEdward River\nEurobodalla\nShoalhaven\nSnowy Monaro"
+            },
+            {
+                "AGRN": "ARGN 1084",
+                "disasterType": "NSW Bushfires",
+                "disasterName": "Snowy Monaro NSW Bushfires \u2013 2 October 2023",
+                "localGovernmentArea": "Snowy Monaro"
+            },
+            {
+                "AGRN": "AGRN 1083",
+                "disasterType": "NSW Bushfires",
+                "disasterName": "Mid-Western NSW Bushfires \u2013 2 October 2023",
+                "localGovernmentArea": "Mid Western"
+            },
+            {
+                "AGRN": "AGRN 1081",
+                "disasterType": "NSW Bushfires",
+                "disasterName": "North Western NSW Bushfires from 14 November 2023",
+                "localGovernmentArea": "Walgett"
+            },
+            {
+                "AGRN": "AGRN 1077",
+                "disasterType": "NSW Bushfires",
+                "disasterName": "Mid-Western NSW Bushfires from 17 October",
+                "localGovernmentArea": "Mid-Western"
+            },
+            {
+                "AGRN": "AGRN 1076",
+                "disasterType": "NSW Bushfires",
+                "disasterName": "Mid North NSW Bushfires from 16 October 2023",
+                "localGovernmentArea": "Kempsey\nMid Coast\nPort Macquarie Hastings"
+            },
+            {
+                "AGRN": "AGRN 1075",
+                "disasterType": "NSW Bushfires",
+                "disasterName": "Far North NSW Bushfires from\u00a013 October\u00a02023",
+                "localGovernmentArea": "Clarence Valley\nInverell\nKyogle\nTenterfield"
+            },
+            {
+                "AGRN": "AGRN 1071",
+                "disasterType": "NSW Bushfires",
+                "disasterName": "North Eastern NSW Bushfires from 21 August 2023",
+                "localGovernmentArea": "Armidale\nClarence Valley\nKempsey\nNambucca"
+            },
+            {
+                "AGRN": "AGRN 1070",
+                "disasterType": "NSW Bushfires",
+                "disasterName": "Bega Valley NSW Bushfire from 3 October 2023",
+                "localGovernmentArea": "Bega Valley"
+            }
+        ]
+    },
+    {
+        "year": "fy-2019-20",
+        "last_updated": "2025-02-25T12:00:00Z",
+        "disasters": [
+            {
+                "AGRN": "918",
+                "disasterType": "Storm and flood",
+                "disasterName": "Western NSW Storms and Floods: 10 to 12 April 2020",
+                "localGovernmentArea": "Coonamble\nGilgandra\nLachlan\nParkes\nWarren\nWarrumbungle"
+            },
+            {
+                "AGRN": "917",
+                "disasterType": "Storm and flood",
+                "disasterName": "Western NSW Storms and Floods: 3 to 4 April 2020",
+                "localGovernmentArea": "Bogan\nCentral Darling\nCobar\nGilgandra\nParkes"
+            },
+            {
+                "AGRN": "919",
+                "disasterType": "Storm and flood",
+                "disasterName": "Cabonne Shire Storms and Floods: 25 March 2020 onwards",
+                "localGovernmentArea": "Cabonne"
+            },
+            {
+                "AGRN": "916",
+                "disasterType": "Flood",
+                "disasterName": "Western NSW Floods: 26 February 2020 onwards",
+                "localGovernmentArea": "Bogan\nBourke\nBrewarrina"
+            },
+            {
+                "AGRN": "898",
+                "disasterType": "Storm and flood",
+                "disasterName": "NSW Storms and Floods: 15 January 2020 onwards",
+                "localGovernmentArea": "Armidale\nBallina\nBathurst\nBayside\nBega Valley\u00a0\nBellingen\nBlacktown\nBlayney\nBlue Mountains\nBurwood\u00a0\nByron\nCabonne\nCamden\nCampbelltown\nCanada Bay\nCanterbury-Bankstown\nCentral Coast\u00a0\nCessnock\nClarence Valley\nCoffs Harbour\nCoonamble\nCumberland\nDungog\nEurobodalla\nFairfield\nGeorges River\nGilgandra\nGlen Innes Severn\nGoulburn Mulwaree\nHawkesbury\nHornsby\nHunter's Hill\u00a0\nInner West\nKempsey\nKu-ring-gai\nKyogle\nLake Macquarie\nLane Cove\nLismore\nLithgow\nLiverpool\nLiverpool Plains\nLord Howe Island\nMaitland\nMid-Coast\nMid-Western\nMosman\nNambucca Valley\nNarromine\nNarrabri\nNewcastle\nNorth Sydney\nNorthern Beaches\nOberon\nParkes\nParramatta\nPenrith\nPort Macquarie-Hastings\nPort Stephens\nQueanbeyan-Palerang\nRandwick\nRichmond Valley\u00a0\nRyde\nShellharbour\nShoalhaven\nSnowy Monaro\nSnowy Valleys\nStrathfield\u00a0\nSutherland\nSydney\nTamworth\u00a0\nTenterfield\nThe Hills\nTweed\nUpper Hunter\nUpper Lachlan\nWalgett\nWarrumbungle\nWaverley\nWilloughby\nWingecarribee\nWollondilly\nWollongong\nWoollahra"
+            },
+            {
+                "AGRN": "878",
+                "disasterType": "Storm",
+                "disasterName": "NSW Storms: 26 November 2019 onwards",
+                "localGovernmentArea": "Campbelltown\nCanterbury-Bankstown\nHawkesbury\nHornsby\nKu-ring-gai\nLane Cove\nLiverpool\nNorthern Beaches\nSutherland\nWilloughby"
+            },
+            {
+                "AGRN": "881",
+                "disasterType": "Storm",
+                "disasterName": "Sydney and Southern Highlands Storms: 5 September 2019 onwards",
+                "localGovernmentArea": "Campbelltown\nCanterbury-Bankstown\nHawkesbury\nHornsby\nThe Hills\nWingecarribee"
+            },
+            {
+                "AGRN": "871",
+                "disasterType": "Bushfire",
+                "disasterName": "NSW Bushfires: 31 August 2019 onwards",
+                "localGovernmentArea": "Armidale\nBallina\nBega Valley\u00a0\nBellingen\nBlue Mountains\nByron\nCentral Coast\u00a0\nCessnock\nClarence Valley\nCoffs Harbour\nCootamundra-Gundagai\nDungog\nEurobodalla\nGlen Innes Severn\nGoulburn Mulwaree\nGreater Hume\nGwydir\u200b\u200b\nHawkesbury\nInverell\nKempsey\nKu-ring-gai\nKyogle\nLake Macquarie\nLismore\nLithgow\nMid-Coast\nMid-Western\nMuswellbrook\nNambucca Valley\nNarrabri\nOberon\nPenrith\nPort Macquarie-Hastings\nQueanbeyan-Palerang\nRichmond Valley\u00a0\nShoalhaven\nSingleton\nSnowy Monaro\nSnowy Valleys\nSutherland\nTamworth\u00a0\nTenterfield\nTweed\nUpper Hunter\nUpper Lachlan\nUralla\nWagga Wagga\nWalcha\nWingecarribee\nWollondilly"
+            },
+            {
+                "AGRN": "880",
+                "disasterType": "Bushfire",
+                "disasterName": "NSW North Coast Bushfires: Commencing 18 July 2019 onwards",
+                "localGovernmentArea": "Clarence Valley\nKempsey\nKyogle\nMid-Coast\nNambucca Valley\nPort Macquarie-Hastings\nRichmond Valley"
+            }
+        ]
+    },
+    {
+        "year": "fy-2021-22",
+        "last_updated": "2025-02-25T12:00:00Z",
+        "disasters": [
+            {
+                "AGRN": "1025",
+                "disasterType": "Severe Weather and Flooding",
+                "disasterName": "NSW Severe Weather\u00a0and Flooding from 27 June 2022 onwards",
+                "localGovernmentArea": "Bayside\nBlacktown\nBlue Mountains\nBogan\nBourke\nBrewarrina\nCabonne\nCamden\nCampbelltown\nCanterbury\u00a0Bankstown\nCentral Coast\nCessnock\nCowra\nCumberland\nDubbo\nDungog\nFairfield\nGeorges River\nHawkesbury\nHornsby\nKempsey\nKiama\nLake Macquarie\nLithgow\nLiverpool\nMaitland\nMid Coast\nMuswellbrook\nNambucca\nNarromine\nNewcastle\nNorthern Beaches\nOberon\nPenrith\nPort Macquarie Hastings\nParkes\nParramatta\nPort Stephens\nRandwick\nShellharbour\nShoalhaven\nSingleton\nStrathfield\nSutherland\nThe Hills\nUpper Lachlan\nWalgett\nWarren\nWingecarribee\nWollondilly\nWollongong"
+            },
+            {
+                "AGRN": "1027",
+                "disasterType": "Storm",
+                "disasterName": "Wingecarribee Severe Storm -\u00a019 April 2022",
+                "localGovernmentArea": "Wingecarribee"
+            },
+            {
+                "AGRN": "1014",
+                "disasterType": "Storm and flood",
+                "disasterName": "Broken Hill Severe Thunderstorm 15 March 2022",
+                "localGovernmentArea": "Broken Hill"
+            },
+            {
+                "AGRN": "1012",
+                "disasterType": "Severe weather and floods",
+                "disasterName": "NSW Severe Weather and Flooding from 22 February 2022 onwards",
+                "localGovernmentArea": "Armidale\nBallina\nBayside\nBega\nBellingen\nBlacktown\u00a0\nBlue Mountains\nByron\nCamden\nCampbelltown\u00a0\nCanterbury\nBankstown\nCentral Coast Cessnock\u00a0\nClarence Valley\nCoffs Harbour\nCumberland\nDungog\nEurobodalla\nFairfield\nGeorges River\nGlen Innes Severn\nGoulburn Mulwaree\nHawkesbury\nHornsby\nInner West\u00a0\nKempsey\nKiama\nKu-Ring-Gai\u00a0\nKyogle\nLake Macquarie\nLismore\nLithgow\nLiverpool\nMaitland\nMidCoast\u00a0\nMid-Western\nMuswellbrook\nNambucca\nNewcastle\u00a0\nNorthern Beaches\u00a0\nParramatta\u00a0\nPenrith\nPort Macquarie/Hastings\nPort Stephens\nQueanbeyan Palerang\nRichmond Valley\nRyde\nShellharbour\u00a0\nShoalhaven\nSingleton\nSnowy Monaro\nStrathfield\nSutherland\u00a0\nTenterfield\nThe Hills\nTweed\nUpper Hunter\nWaverley\nWingecarribee\nWilloughby\nWollondilly\u00a0\nWollongong"
+            },
+            {
+                "AGRN": "1001",
+                "disasterType": "Storms and Floods",
+                "disasterName": "Southern NSW storms and floods from 5 January 2022 onwards",
+                "localGovernmentArea": "Albury\nBerrigan\nBland Shire\nBlayney Shire\nCentral Darling Shire\nCootamundra\u00a0Gundagai Shire\nEdward River\nFederation Shire\nGoulburn Mulwaree\u00a0\nGreater Hume Shire\nGriffith\nHay Shire\nHilltops\nJunee Shire\nLeeton\nLockhart Shire\nNarrandera\nSnowy Valleys Shire\nTemora\nUpper Lachlan Shire\nWeddin"
+            },
+            {
+                "AGRN": "996",
+                "disasterType": "Storm",
+                "disasterName": "Lithgow severe storm and flash flooding as of 11 January",
+                "localGovernmentArea": "Lithgow"
+            },
+            {
+                "AGRN": "993",
+                "disasterType": "Storm",
+                "disasterName": "Northern Beaches severe storm as of 19 December 2021",
+                "localGovernmentArea": "Northern Beaches"
+            },
+            {
+                "AGRN": "992",
+                "disasterType": "Storms and floods",
+                "disasterName": "NSW storms and floods from 30 July 2021 onwards",
+                "localGovernmentArea": "Forbes\nUpper Lachlan Shire"
+            },
+            {
+                "AGRN": "989",
+                "disasterType": "Storm and Tornado",
+                "disasterName": "Narrabri storm and tornado of 30 September 2021",
+                "localGovernmentArea": "Narrabri"
+            },
+            {
+                "AGRN": "987",
+                "disasterType": "Severe weather and flooding",
+                "disasterName": "NSW severe weather and flooding 9 November 2021 onwards",
+                "localGovernmentArea": "Balranald\nBathurst\nBega Valley\nBerrigan\nBland\nBlayney\nBlue Mountains\nBogan\nBourke\nBrewarrina\nBroken Hill\nCabonne\nCentral Darling\nCobar\nCoonamble\nCootamundra-Gundagai\nCowra\nDubbo\nEurobodalla\nFederation\nForbes\nGilgandra\nGlen Innes Severn\nGoulburn-Mulwaree\nGreater Hume\nGunnedah\nGwydir\nHilltops\nInverell\u00a0\nKyogle\nLachlan Shire\nLismore\nLithgow\nLiverpool Plains\nLockhart\nMid-Western\nMoree Plains\nMuswellbrook\nNarrabri\nNarromine\nOberon\nOrange\nParkes\nPort Macquarie Hastings\nQueanbeyan-Palerang\nRichmond Valley\nShoalhaven\nSingleton\nSnowy Monaro\nSnowy Valleys\nTamworth\nTenterfield\nUpper Hunter\nUpper Lachlan\nWalcha\nWalgett\nWarren\nWarrumbungle\nWeddin\nWentworth\nYass Valley\nand\nUnincorporated Area of NSW"
+            },
+            {
+                "AGRN": "982",
+                "disasterType": "Severe weather",
+                "disasterName": "Severe weather event across NSW from 23 October onwards",
+                "localGovernmentArea": "Wollondilly"
+            },
+            {
+                "AGRN": "981",
+                "disasterType": "Storm and flood",
+                "disasterName": "NSW storms and floods from 22 August onwards",
+                "localGovernmentArea": "Oberon"
+            },
+            {
+                "AGRN": "980",
+                "disasterType": "Severe weather",
+                "disasterName": "North East NSW severe weather from 20 October onwards",
+                "localGovernmentArea": "Coffs Harbour"
+            },
+            {
+                "AGRN": "979",
+                "disasterType": "Storm",
+                "disasterName": "Armidale storm from October 14 2021 onwards",
+                "localGovernmentArea": "Armidale"
+            },
+            {
+                "AGRN": "975",
+                "disasterType": "Storm and flood",
+                "disasterName": "NSW storms and floods from 16 July 2021 onwards",
+                "localGovernmentArea": "Glen Innes Severn\nInverell"
+            }
+        ]
+    }
+]

@@ -1,52 +1,26 @@
 openapi: 3.0.0
 info:
   title: Family Census Data API
-  description: API for retrieving family composition and population data for a given suburb.
-  version: 1.0.0
+  description: >
+    API for retrieving family composition and population data for a given suburb,
+    and for triggering the data collection of ABS DataPacks for NSW.
+  version: 1.1.0
 
 servers:
-  -  url: https://api.yourdomain.com
-     description: Production Server
+  - url: https://m42dj4mgj8.execute-api.ap-southeast-2.amazonaws.com/prod
+    description: Production Server
 
 paths:
-  /data/update:
-    post:
-      summary: Trigger an update by making a request to the ABS API
-      description: This endpoint triggers a request to the ABS API to fetch the latest census data and update the database.
-      responses:
-        200:
-          description: Successfully requested data from ABS API
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  message:
-                    type: string
-              example:
-                message: "ABS API update triggered successfully"
-        500:
-          description: Failed to fetch data from ABS API
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  error:
-                    type: string
-              example:
-                error: "Failed to retrieve data from ABS API"
-
-  /data/family/{address}:
+  /family/{suburb}:
     get:
-      summary: Get family composition data for a given address
+      summary: Get family composition data for a given suburb
       parameters:
-        - name: address
+        - name: suburb
           in: path
           required: true
           schema:
             type: string
-          description: The address (suburb) for which family composition data is requested.
+          description: The suburb for which family composition data is requested.
       responses:
         200:
           description: Successful response with family composition data
@@ -86,8 +60,8 @@ paths:
                 one_parent_with_children_over_15: "931"
                 total_one_parent_families: "1,399"
                 other_family: "360"
-        404:
-          description: Address not found
+        400:
+          description: Bad Request – e.g., suburb not provided or invalid.
           content:
             application/json:
               schema:
@@ -96,9 +70,31 @@ paths:
                   error:
                     type: string
               example:
-                error: "Address not found"
+                error: "No suburb provided in event"
+        404:
+          description: Not Found – The provided suburb was not found.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: "Suburb not found"
+        500:
+          description: Internal Server Error – An unexpected error occurred.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: "An error occurred: <detailed error message>"
 
-  /data/population/{suburb}:
+  /family/population/{suburb}:
     get:
       summary: Get population data for a given suburb
       parameters:
@@ -129,8 +125,19 @@ paths:
                 total_population: "45,593"
                 male: "23,365"
                 female: "22,229"
+        400:
+          description: Bad Request – e.g., suburb not provided or invalid.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: "No suburb provided in event"
         404:
-          description: Suburb not found
+          description: Not Found – The suburb was not found.
           content:
             application/json:
               schema:
@@ -140,3 +147,55 @@ paths:
                     type: string
               example:
                 error: "Suburb not found"
+        500:
+          description: Internal Server Error – An unexpected error occurred.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: "An error occurred: <detailed error message>"
+
+  /collector:
+    post:
+      summary: Trigger the ABS datapack collector
+      description: >
+        Triggers the collector function which downloads the most recent ABS DataPack
+        for suburb and localities (SAL) for NSW and uploads the ZIP file to S3.
+      responses:
+        200:
+          description: Data collection and processing completed successfully.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+              example:
+                message: "Successfully downloaded and uploaded the ABS datapack to s3"
+        400:
+          description: Bad Request – e.g., required parameters missing (if applicable).
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: "Missing required parameters."
+        500:
+          description: Internal Server Error – An error occurred during data collection.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: "Error processing the datapack: <detailed error message>"

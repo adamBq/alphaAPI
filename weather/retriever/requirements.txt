@@ -1,4 +1,1 @@
-fastapi
-uvicorn
 boto3
-mangum

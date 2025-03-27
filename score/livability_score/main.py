@@ -14,7 +14,7 @@ dynamodb = boto3.resource('dynamodb')
 
 def family_score(suburb):
 
-    url = 'https://tzeks84nk6.execute-api.ap-southeast-2.amazonaws.com/test/family/'+ suburb
+    url = 'https://tzeks84nk6.execute-api.ap-southeast-2.amazonaws.com/test/family/' + suburb
 
     try:
         response = requests.get(url)
@@ -25,39 +25,51 @@ def family_score(suburb):
         logger.info(f"Retrieved family statistics for {suburb}")
         data = response.json()
 
-    family_with_child = data["coupleFamilyWithChildrenUnder15"] + data["oneParentWithChildrenUnder15"]
+    family_with_child = data["coupleFamilyWithChildrenUnder15"] + \
+        data["oneParentWithChildrenUnder15"]
     family_percent = family_with_child / data["totalFamilies"]
 
-    score = 10 * family_percent/0.5
+    score = 10 * family_percent / 0.5
 
     logger.info(f"Calculated family score: {score}")
     return score
 
+
 def crime_score(suburb):
-    major_crimes = {"Homicide", "Assault", "Sexual offences", "Abduction and kidnapping", "Robbery", "Blackmail and extortion", 
-                    "Coercive Control", "Intimidation, stalking and harassment", "Theft", "Other offences against the person",
-                    "Arson", "Malicious damage to property", "Drug offences", "Prohibited and regulated weapons offences", "Pornography offences"}
-    minor_crimes = {"Disorderly conduct", "Betting and gaming offences", "Liquor offences", "Against justice procedures", "Other offences", "Transport regulatory offences"}
+    major_crimes = {
+        "Homicide",
+        "Assault",
+        "Sexual offences",
+        "Abduction and kidnapping",
+        "Robbery",
+        "Blackmail and extortion",
+        "Coercive Control",
+        "Intimidation, stalking and harassment",
+        "Theft",
+        "Other offences against the person",
+        "Arson",
+        "Malicious damage to property",
+        "Drug offences",
+        "Prohibited and regulated weapons offences",
+        "Pornography offences"}
+    minor_crimes = {
+        "Disorderly conduct",
+        "Betting and gaming offences",
+        "Liquor offences",
+        "Against justice procedures",
+        "Other offences",
+        "Transport regulatory offences"}
 
     major_crime_multiplier = 1
     minor_crime_multiplier = 0.5
     crime_count = 0
 
     url = "https://favnlumox2.execute-api.us-east-1.amazonaws.com/test?suburb=" + suburb
-<<<<<<< Updated upstream
-    
-    response = requests.get(url)
-
-    if response.status_code == 200:
-        data = response.json()
-    else:
-=======
 
     try:
         response = requests.get(url)
     except Exception as e:
         logger.exception(e)
->>>>>>> Stashed changes
         return None
     else:
         logger.info(f"Retrieved crime statistics for {suburb}")
@@ -71,18 +83,13 @@ def crime_score(suburb):
 
         crime_count += multiplier * crime_data["totalNum"]
 
-    url = 'https://tzeks84nk6.execute-api.ap-southeast-2.amazonaws.com/test/family/population/'+ suburb
+    url = 'https://tzeks84nk6.execute-api.ap-southeast-2.amazonaws.com/test/family/population/' + suburb
 
     try:
         response = requests.get(url)
     except Exception as e:
         logger.exception(e)
         return None
-<<<<<<< Updated upstream
-    
-    population = data["totalPopulation"]
-    crime_ratio = (crime_count)/population
-=======
     else:
         logger.info(f"Retrieved population statistics for {suburb}")
         data = response.json()
@@ -94,9 +101,7 @@ def crime_score(suburb):
 
     logger.info(f"Calculated crime score: {score}")
     return score
->>>>>>> Stashed changes
 
-    return 10 * (( -crime_ratio / 12.5) + 1)
 
 def weather_score(suburb):
     url = 'https://r69rgp99vg.execute-api.ap-southeast-2.amazonaws.com/dev/suburb'
@@ -111,29 +116,25 @@ def weather_score(suburb):
     except Exception as e:
         logger.exception(e)
         return None
-<<<<<<< Updated upstream
-    
-    body = json.loads(data["body"])
-=======
     else:
         logger.info(f"Retrieved weather statistics for {suburb}")
         data = response.json()
->>>>>>> Stashed changes
 
     if body.get("requestedSuburbData", None) is None:
         return 10
-    
+
     weather_count = body["requestedSuburbData"]["occurrences"]
     weather_count_max = body["highestSuburbData"]["occurrences"]
 
-<<<<<<< Updated upstream
-    return (10 / (weather_count_max**2)) * (weather_count - weather_count_max)**2
+    return (10 / (weather_count_max**2)) * \
+        (weather_count - weather_count_max)**2
 
 def transport_score(address):
-    url = "https://maps.googleapis.com/maps/api/geocode/json?address=" + urllib.parse.quote(address) + "&key=" + API_KEY
-    
+    url = "https://maps.googleapis.com/maps/api/geocode/json?address=" + \
+        urllib.parse.quote(address) + "&key=" + API_KEY
+
     response = requests.get(url)
-    
+
     if response.status_code == 200:
         data = response.json()
     else:
@@ -142,7 +143,6 @@ def transport_score(address):
     if not data:
         return "Error: Invalid address or location not found"
     
-=======
     score = (10 / (weather_count_max**2)) * \
         (weather_count - weather_count_max)**2
 
@@ -151,11 +151,9 @@ def transport_score(address):
 
 
 def transport_score(data):
-
->>>>>>> Stashed changes
+    
     house_location = data["results"][0]["geometry"]["location"]
     lat, lng = house_location["lat"], house_location["lng"]
-    
 
     # get closest bus stop
     url = "https://places.googleapis.com/v1/places:searchNearby"
@@ -196,8 +194,13 @@ def transport_score(data):
         bus_stop_location = data["places"][0]["location"]
         bus_stop_count = len(data["places"])
 
-        distance = haversine((lat, lng), (bus_stop_location["latitude"], bus_stop_location["longitude"]), unit=Unit.METERS)
-        bus_score = 5 * ((1500 - distance)/1500) * (bus_stop_count / 20)
+        distance = haversine(
+            (lat,
+             lng),
+            (bus_stop_location["latitude"],
+             bus_stop_location["longitude"]),
+            unit=Unit.METERS)
+        bus_score = 5 * ((1500 - distance) / 1500) * (bus_stop_count / 20)
 
     # get closest train station
     params = {
@@ -230,18 +233,32 @@ def transport_score(data):
         train_station_location = data["places"][0]["location"]
         train_station_count = min(len(data["places"]), 10)
 
-        distance = haversine((lat, lng), (train_station_location["latitude"], train_station_location["longitude"]), unit=Unit.METERS)
-        train_score = 5 * ((10000 - distance)/10000) * (train_station_count / 10)
+        distance = haversine(
+            (lat,
+             lng),
+            (train_station_location["latitude"],
+             train_station_location["longitude"]),
+            unit=Unit.METERS)
+        train_score = 5 * ((10000 - distance) / 10000) * \
+            (train_station_count / 10)
 
     logger.info(f"Calculated transport score: {train_score + bus_score}")
     return train_score + bus_score
 
+
 def handler(event, context):
+    cors_headers = {
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Headers": "*",
+        "Access-Control-Allow-Methods": "OPTIONS,POST,GET"
+    }
+
     body = json.loads(event.get('body', None))
 
     if not body:
         return json.dumps({
             "statusCode": 400,
+            "headers": cors_headers,
             "body": "No body"
         })
 
@@ -249,25 +266,28 @@ def handler(event, context):
     if not address:
         return {
             "statusCode": 400,
+            "headers": cors_headers,
             "body": "No address provided"
         }
     
-<<<<<<< Updated upstream
-=======
     weights = body.get("weights", None)
     if not weights:
         return {
             "statusCode": 400,
+            "headers": cors_headers,
             "body": "No weights provided"
         }
-    
->>>>>>> Stashed changes
+
     total_weights = sum(weights.values())
 
     if total_weights != 1:
-        weights = {key: value/total_weights for key, value in weights.items()}
+        weights = {
+            key: value /
+            total_weights for key,
+            value in weights.items()}
 
-    url = "https://maps.googleapis.com/maps/api/geocode/json?address=" + urllib.parse.quote(address) + "&key=" + API_KEY
+    url = "https://maps.googleapis.com/maps/api/geocode/json?address=" + \
+        urllib.parse.quote(address) + "&key=" + API_KEY
 
     try:
         logger.info(f"Fetching geocode for address: {address}")
@@ -275,18 +295,17 @@ def handler(event, context):
     except Exception as e:
         print(e)
         logger.exception(e)
-        return json.dumps({
+        return {
             "statusCode": 400,
+            "headers": cors_headers,
             "body": f"Invalid address: {e}"
-        })
+        }
     else:
         logger.info(f"Retrieved geocode for address: {address}")
         data = response.json()
 
-    suburb = next(
-        (component["long_name"] for component in data["results"][0]["address_components"] if "locality" in component["types"]),
-        None
-    )
+    suburb = next((component["long_name"] for component in data["results"][
+                  0]["address_components"] if "locality" in component["types"]), None)
 
     scores = {
         "transport": transport_score(data),
@@ -301,28 +320,11 @@ def handler(event, context):
             logger.error(f"Score for {key} is invalid")
             return {
                 "statusCode": 500,
+                "headers": cors_headers,
                 "body": f"Unable to generate {key} score"
             }
     logger.info("All scores are valid")
 
-<<<<<<< Updated upstream
-    return {
-        "statusCode": 200,
-        "body": {
-            "overallScore" : round(weights.get("publicTransportation", 0) * scores["transport"] + 
-                        weights.get("crime", 0) * scores["crime"] + 
-                        weights.get("weather", 0) * scores["weather"] + 
-                        weights.get("familyDemographics", 0) * scores["family"]
-                        , 2),
-            "breakdown" : {
-                "crimeScore": round(scores["crime"], 2),
-                "transportScore": round(scores["transport"], 2),
-                "weatherScore": round(scores["weather"], 2),
-                "familyScore": round(scores["family"], 2),
-            }
-        }
-    }
-=======
     overall = {
             "overallScore": round(
                 weights.get(
@@ -361,6 +363,6 @@ def handler(event, context):
     
     return {
         "statusCode": 200,
+        "headers": cors_headers,
         "body": json.dumps(overall)
     }
->>>>>>> Stashed changes
