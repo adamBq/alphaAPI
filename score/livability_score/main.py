@@ -1,23 +1,34 @@
+import logging
 import requests
+from requests.exceptions import HTTPError
 import json
+import boto3
 import urllib.parse
 from haversine import haversine, Unit
 
 API_KEY = "AIzaSyDcgohncbfmx_hw2MzwMTIe8jRqFRtgQ5c"
 
-# dynamodb = boto3.resource('dynamodb')
+logger = logging.getLogger()
+logger.setLevel("INFO")
 
+dynamodb = boto3.resource('dynamodb')
 
 def family_score(suburb):
 
-    url = 'https://tzeks84nk6.execute-api.ap-southeast-2.amazonaws.com/test/family/' + suburb
+    url = 'https://m42dj4mgj8.execute-api.ap-southeast-2.amazonaws.com/prod/family/' + suburb
 
-    response = requests.get(url)
-
-    if response.status_code == 200:
-        data = response.json()
-    else:
+    try:
+        response = requests.get(url)
+        response.raise_for_status()
+    except HTTPError as e:
+        logger.exception(e)
         return None
+    except Exception as e:
+        logger.exception(e)
+        return None
+    else:
+        logger.info(f"Retrieved family statistics for {suburb}")
+        data = response.json()
 
     family_with_child = data["coupleFamilyWithChildrenUnder15"] + \
         data["oneParentWithChildrenUnder15"]
@@ -25,6 +36,7 @@ def family_score(suburb):
 
     score = 10 * family_percent / 0.5
 
+    logger.info(f"Calculated family score: {score}")
     return score
 
 
@@ -57,14 +69,20 @@ def crime_score(suburb):
     minor_crime_multiplier = 0.5
     crime_count = 0
 
-    url = "https://favnlumox2.execute-api.us-east-1.amazonaws.com/test?suburb=" + suburb
+    url = "https://m42dj4mgj8.execute-api.ap-southeast-2.amazonaws.com/prod/crime/" + urllib.parse.quote(suburb)
 
-    response = requests.get(url)
-
-    if response.status_code == 200:
-        data = response.json()
-    else:
+    try:
+        response = requests.get(url)
+        response.raise_for_status()
+    except HTTPError as e:
+        logger.exception(e)
         return None
+    except Exception as e:
+        logger.exception(e)
+        return None
+    else:
+        logger.info(f"Retrieved crime statistics for {suburb}")
+        data = response.json()
 
     for crime_category, crime_data in data["crimeSummary"].items():
         if crime_category in major_crimes:
@@ -74,62 +92,67 @@ def crime_score(suburb):
 
         crime_count += multiplier * crime_data["totalNum"]
 
-    url = 'https://tzeks84nk6.execute-api.ap-southeast-2.amazonaws.com/test/family/population/' + suburb
+    url = 'https://m42dj4mgj8.execute-api.ap-southeast-2.amazonaws.com/prod/family/population/' + urllib.parse.quote(suburb)
 
-    response = requests.get(url)
-
-    if response.status_code == 200:
-        data = response.json()
-    else:
+    try:
+        response = requests.get(url)
+        response.raise_for_status()
+    except HTTPError as e:
+        logger.exception(e)
         return None
+    except Exception as e:
+        logger.exception(e)
+        return None
+    else:
+        logger.info(f"Retrieved population statistics for {suburb}")
+        data = response.json()
 
     population = data["totalPopulation"]
     crime_ratio = (crime_count) / population
 
-    return 10 * ((-crime_ratio / 12.5) + 1)
+    score = 10 * ((-crime_ratio / 12.5) + 1)
+
+    logger.info(f"Calculated crime score: {score}")
+    return score
 
 
 def weather_score(suburb):
-    url = 'https://r69rgp99vg.execute-api.ap-southeast-2.amazonaws.com/dev/suburb'
+    url = 'https://m42dj4mgj8.execute-api.ap-southeast-2.amazonaws.com/prod/data/weather/suburb'
 
     body = {
         "suburb": suburb,
         "includeHighest": True
     }
 
-    response = requests.post(url, json=body)
-
-    if response.status_code == 200:
-        data = response.json()
-    else:
+    try:
+        response = requests.post(url, json=body)
+        response.raise_for_status()
+    except HTTPError as e:
+        logger.exception(e)
         return None
+    except Exception as e:
+        logger.exception(e)
+        return None
+    else:
+        logger.info(f"Retrieved weather statistics for {suburb}")
+        data = response.json()
 
-    body = json.loads(data["body"])
-
-    if body.get("requestedSuburbData", None) is None:
+    if data.get("requestedSuburbData", None) is None:
+        logger.info(f"Calculated weather score: 10")
         return 10
 
-    weather_count = body["requestedSuburbData"]["occurrences"]
-    weather_count_max = body["highestSuburbData"]["occurrences"]
-
-    return (10 / (weather_count_max**2)) * \
+    weather_count = data["requestedSuburbData"]["occurrences"]
+    weather_count_max = data["highestSuburbData"]["occurrences"]
+    
+    score = (10 / (weather_count_max**2)) * \
         (weather_count - weather_count_max)**2
 
+    logger.info(f"Calculated weather score: {score}")
+    return score
 
-def transport_score(address):
-    url = "https://maps.googleapis.com/maps/api/geocode/json?address=" + \
-        urllib.parse.quote(address) + "&key=" + API_KEY
 
-    response = requests.get(url)
-
-    if response.status_code == 200:
-        data = response.json()
-    else:
-        return None
-
-    if not data:
-        return "Error: Invalid address or location not found"
-
+def transport_score(data):
+    
     house_location = data["results"][0]["geometry"]["location"]
     lat, lng = house_location["lat"], house_location["lng"]
 
@@ -157,12 +180,18 @@ def transport_score(address):
         "includedTypes": ["bus_station", "bus_stop", "light_rail_station"]
     }
 
-    response = requests.post(url, json=params, headers=headers)
-
-    if response.status_code == 200:
-        data = response.json()
-    else:
+    try:
+        response = requests.post(url, json=params, headers=headers)
+        response.raise_for_status()
+    except HTTPError as e:
+        logger.exception(e)
         return None
+    except Exception as e:
+        logger.exception(e)
+        return None
+    else:
+        logger.info("Retrieved bus and lightrail data")
+        data = response.json()
 
     if not data.get("places"):
         bus_score = 0
@@ -194,12 +223,18 @@ def transport_score(address):
         "includedTypes": ["subway_station", "train_station"]
     }
 
-    response = requests.post(url, json=params, headers=headers)
-
-    if response.status_code == 200:
-        data = response.json()
-    else:
+    try:
+        response = requests.post(url, json=params, headers=headers)
+        response.raise_for_status()
+    except HTTPError as e:
+        logger.exception(e)
         return None
+    except Exception as e:
+        logger.exception(e)
+        return None
+    else:
+        logger.info("Retrieved train and metro data")
+        data = response.json()
 
     if not data.get("places"):
         train_score = 0
@@ -216,6 +251,7 @@ def transport_score(address):
         train_score = 5 * ((10000 - distance) / 10000) * \
             (train_station_count / 10)
 
+    logger.info(f"Calculated transport score: {train_score + bus_score}")
     return train_score + bus_score
 
 
@@ -225,14 +261,30 @@ def handler(event, context):
         "Access-Control-Allow-Headers": "*",
         "Access-Control-Allow-Methods": "OPTIONS,POST,GET"
     }
-    address = event.get("address", None)
-    weights = event.get("weights", None)
 
-    if address is None or weights is None:
+    body = json.loads(event.get('body', None))
+
+    if not body:
+        return json.dumps({
+            "statusCode": 400,
+            "headers": cors_headers,
+            "body": "No body"
+        })
+
+    address = body.get("address", None)
+    if not address:
         return {
             "statusCode": 400,
             "headers": cors_headers,
-            "body": "Invalid Address"
+            "body": "No address provided"
+        }
+    
+    weights = body.get("weights", None)
+    if not weights:
+        return {
+            "statusCode": 400,
+            "headers": cors_headers,
+            "body": "No weights provided"
         }
 
     total_weights = sum(weights.values())
@@ -246,39 +298,47 @@ def handler(event, context):
     url = "https://maps.googleapis.com/maps/api/geocode/json?address=" + \
         urllib.parse.quote(address) + "&key=" + API_KEY
 
-    response = requests.get(url)
-
-    if response.status_code == 200:
-        data = response.json()
-    else:
+    try:
+        logger.info(f"Fetching geocode for address: {address}")
+        response = requests.get(url)
+        response.raise_for_status()
+    except HTTPError as e:
+        logger.exception(e)
+        return None
+    except Exception as e:
+        print(e)
+        logger.exception(e)
         return {
             "statusCode": 400,
             "headers": cors_headers,
-            "body": "Invalid address"
+            "body": f"Invalid address: {e}"
         }
+    else:
+        logger.info(f"Retrieved geocode for address: {address}")
+        data = response.json()
 
     suburb = next((component["long_name"] for component in data["results"][
                   0]["address_components"] if "locality" in component["types"]), None)
 
     scores = {
-        "transport": transport_score(address),
+        "transport": transport_score(data),
         "crime": crime_score(suburb),
         "weather": weather_score(suburb),
         "family": family_score(suburb),
     }
 
+    logger.info("Checking all scores are valid")
     for key, value in scores.items():
         if value is None:
+            logger.error(f"Score for {key} is invalid")
             return {
                 "statusCode": 500,
                 "headers": cors_headers,
                 "body": f"Unable to generate {key} score"
             }
+    logger.info("All scores are valid")
 
-    return {
-        "statusCode": 200,
-        "headers": cors_headers,
-        "body": {
+    overall = {
             "overallScore": round(
                 weights.get(
                     "publicTransportation",
@@ -310,4 +370,12 @@ def handler(event, context):
                 "familyScore": round(
                     scores["family"],
                     2),
-            }}}
+        }}
+    
+    logger.info(overall)
+    
+    return {
+        "statusCode": 200,
+        "headers": cors_headers,
+        "body": json.dumps(overall)
+    }
