@@ -4,7 +4,7 @@ info:
   description: Provides historical and recent crime data for NSW suburbs using statistics from the NSW BOCSAR open data website.
   version: 1.1.0
 servers:
-  - url: https://favnlumox2.execute-api.us-east-1.amazonaws.com/test?suburb={suburb}&detailed=boolean
+  - url: https://m42dj4mgj8.execute-api.ap-southeast-2.amazonaws.com/prod
     description: Production Server
 
 paths:
