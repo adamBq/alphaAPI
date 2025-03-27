@@ -1,3 +1,4 @@
 requests
 haversine
 pytest
+boto3
