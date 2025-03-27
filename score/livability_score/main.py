@@ -1,5 +1,6 @@
 import logging
 import requests
+from requests.exceptions import HTTPError
 import json
 import boto3
 import urllib.parse
@@ -14,10 +15,14 @@ dynamodb = boto3.resource('dynamodb')
 
 def family_score(suburb):
 
-    url = 'https://tzeks84nk6.execute-api.ap-southeast-2.amazonaws.com/test/family/' + suburb
+    url = 'https://m42dj4mgj8.execute-api.ap-southeast-2.amazonaws.com/prod/family/' + suburb
 
     try:
         response = requests.get(url)
+        response.raise_for_status()
+    except HTTPError as e:
+        logger.exception(e)
+        return None
     except Exception as e:
         logger.exception(e)
         return None
@@ -64,10 +69,14 @@ def crime_score(suburb):
     minor_crime_multiplier = 0.5
     crime_count = 0
 
-    url = "https://favnlumox2.execute-api.us-east-1.amazonaws.com/test?suburb=" + suburb
+    url = "https://m42dj4mgj8.execute-api.ap-southeast-2.amazonaws.com/prod/crime/" + urllib.parse.quote(suburb)
 
     try:
         response = requests.get(url)
+        response.raise_for_status()
+    except HTTPError as e:
+        logger.exception(e)
+        return None
     except Exception as e:
         logger.exception(e)
         return None
@@ -83,10 +92,14 @@ def crime_score(suburb):
 
         crime_count += multiplier * crime_data["totalNum"]
 
-    url = 'https://tzeks84nk6.execute-api.ap-southeast-2.amazonaws.com/test/family/population/' + suburb
+    url = 'https://m42dj4mgj8.execute-api.ap-southeast-2.amazonaws.com/prod/family/population/' + urllib.parse.quote(suburb)
 
     try:
         response = requests.get(url)
+        response.raise_for_status()
+    except HTTPError as e:
+        logger.exception(e)
+        return None
     except Exception as e:
         logger.exception(e)
         return None
@@ -104,7 +117,7 @@ def crime_score(suburb):
 
 
 def weather_score(suburb):
-    url = 'https://r69rgp99vg.execute-api.ap-southeast-2.amazonaws.com/dev/suburb'
+    url = 'https://m42dj4mgj8.execute-api.ap-southeast-2.amazonaws.com/prod/data/weather/suburb'
 
     body = {
         "suburb": suburb,
@@ -113,6 +126,10 @@ def weather_score(suburb):
 
     try:
         response = requests.post(url, json=body)
+        response.raise_for_status()
+    except HTTPError as e:
+        logger.exception(e)
+        return None
     except Exception as e:
         logger.exception(e)
         return None
@@ -120,28 +137,12 @@ def weather_score(suburb):
         logger.info(f"Retrieved weather statistics for {suburb}")
         data = response.json()
 
-    if body.get("requestedSuburbData", None) is None:
+    if data.get("requestedSuburbData", None) is None:
+        logger.info(f"Calculated weather score: 10")
         return 10
 
-    weather_count = body["requestedSuburbData"]["occurrences"]
-    weather_count_max = body["highestSuburbData"]["occurrences"]
-
-    return (10 / (weather_count_max**2)) * \
-        (weather_count - weather_count_max)**2
-
-def transport_score(address):
-    url = "https://maps.googleapis.com/maps/api/geocode/json?address=" + \
-        urllib.parse.quote(address) + "&key=" + API_KEY
-
-    response = requests.get(url)
-
-    if response.status_code == 200:
-        data = response.json()
-    else:
-        return None
-
-    if not data:
-        return "Error: Invalid address or location not found"
+    weather_count = data["requestedSuburbData"]["occurrences"]
+    weather_count_max = data["highestSuburbData"]["occurrences"]
     
     score = (10 / (weather_count_max**2)) * \
         (weather_count - weather_count_max)**2
@@ -181,6 +182,10 @@ def transport_score(data):
 
     try:
         response = requests.post(url, json=params, headers=headers)
+        response.raise_for_status()
+    except HTTPError as e:
+        logger.exception(e)
+        return None
     except Exception as e:
         logger.exception(e)
         return None
@@ -220,6 +225,10 @@ def transport_score(data):
 
     try:
         response = requests.post(url, json=params, headers=headers)
+        response.raise_for_status()
+    except HTTPError as e:
+        logger.exception(e)
+        return None
     except Exception as e:
         logger.exception(e)
         return None
@@ -292,6 +301,10 @@ def handler(event, context):
     try:
         logger.info(f"Fetching geocode for address: {address}")
         response = requests.get(url)
+        response.raise_for_status()
+    except HTTPError as e:
+        logger.exception(e)
+        return None
     except Exception as e:
         print(e)
         logger.exception(e)
