@@ -3,6 +3,7 @@ import json
 import sys
 import boto3
 import pandas as pd
+import urllib.parse
 from io import StringIO
 
 s3_client = boto3.client('s3')
@@ -86,7 +87,8 @@ def get_family_data(
 
 def lambda_handler(event, context):
     try:
-        suburb = event["pathParameters"]["suburb"]
+        suburb_encoded = event["pathParameters"]["suburb"]
+        suburb = urllib.parse.unquote(suburb_encoded)
         if not suburb:
             return {
                 "statusCode": 400,

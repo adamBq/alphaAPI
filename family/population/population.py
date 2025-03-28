@@ -3,6 +3,7 @@ import pandas as pd
 import json
 import sys
 import boto3
+import urllib.parse
 from io import StringIO
 
 s3_client = boto3.client('s3')
@@ -74,8 +75,8 @@ def get_suburb_population(
 def lambda_handler(event, context):
     print("Received event: ", json.dumps(event))
     try:
-        suburb = event.get("pathParameters", {}).get("suburb")
-        if not suburb:
+        suburb_encoded = event.get("pathParameters", {}).get("suburb")
+        if not suburb_encoded:
             return {
                 "statusCode": 400,
                 "headers": {
@@ -85,6 +86,7 @@ def lambda_handler(event, context):
                 },
                 "body": json.dumps({"error": "No suburb provided in event"})
             }
+        suburb = urllib.parse.unquote(suburb_encoded)
         response_json = get_suburb_population(suburb)
         response_obj = json.loads(response_json)
 
