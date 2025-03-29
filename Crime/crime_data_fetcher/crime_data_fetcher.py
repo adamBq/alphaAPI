@@ -1,11 +1,15 @@
 import json
 import boto3
+import requests
+import zipfile
+import io
+import pandas as pd
 
 s3 = boto3.client("s3")
-s3_bucket_name = "crimedataraw"
+s3_bucket_name = "crime-data-bucket-raw-data"
 
 sqs = boto3.client("sqs")
-sqs_queue_url = "https://sqs.us-east-1.amazonaws.com/216989131264/CrimeDataProcessingQueue"
+sqs_queue_url = "https://sqs.ap-southeast-2.amazonaws.com/522814692697/crime-data-processing-queue"
 batch_size = 10
 
 CRIME_DATA_URL = "https://bocsarblob.blob.core.windows.net/bocsar-open-data/SuburbData.zip"
