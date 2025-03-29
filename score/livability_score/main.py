@@ -199,7 +199,7 @@ def weather_score(suburb):
         data = response.json()
 
     if data.get("requestedSuburbData", None) is None:
-        score = 10
+        score = 10.0
     else:
         weather_count = data["requestedSuburbData"]["occurrences"]
         weather_count_max = data["highestSuburbData"]["occurrences"]
