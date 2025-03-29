@@ -7,6 +7,12 @@ import urllib.parse
 from haversine import haversine, Unit
 
 API_KEY = "AIzaSyDcgohncbfmx_hw2MzwMTIe8jRqFRtgQ5c"
+CORS_HEADERS = {
+    "Access-Control-Allow-Origin": "*",
+    "Access-Control-Allow-Headers": "*",
+    "Access-Control-Allow-Methods": "OPTIONS,POST,GET"
+}
+
 
 logger = logging.getLogger()
 logger.setLevel("INFO")
@@ -256,18 +262,12 @@ def transport_score(data):
 
 
 def handler(event, context):
-    cors_headers = {
-        "Access-Control-Allow-Origin": "*",
-        "Access-Control-Allow-Headers": "*",
-        "Access-Control-Allow-Methods": "OPTIONS,POST,GET"
-    }
-
     body = json.loads(event.get('body', None))
 
     if not body:
         return json.dumps({
             "statusCode": 400,
-            "headers": cors_headers,
+            "headers": CORS_HEADERS,
             "body": "No body"
         })
 
@@ -275,7 +275,7 @@ def handler(event, context):
     if not address:
         return {
             "statusCode": 400,
-            "headers": cors_headers,
+            "headers": CORS_HEADERS,
             "body": "No address provided"
         }
     
@@ -283,7 +283,7 @@ def handler(event, context):
     if not weights:
         return {
             "statusCode": 400,
-            "headers": cors_headers,
+            "headers": CORS_HEADERS,
             "body": "No weights provided"
         }
 
@@ -310,7 +310,7 @@ def handler(event, context):
         logger.exception(e)
         return {
             "statusCode": 400,
-            "headers": cors_headers,
+            "headers": CORS_HEADERS,
             "body": f"Invalid address: {e}"
         }
     else:
@@ -333,7 +333,7 @@ def handler(event, context):
             logger.error(f"Score for {key} is invalid")
             return {
                 "statusCode": 500,
-                "headers": cors_headers,
+                "headers": CORS_HEADERS,
                 "body": f"Unable to generate {key} score"
             }
     logger.info("All scores are valid")
@@ -376,6 +376,6 @@ def handler(event, context):
     
     return {
         "statusCode": 200,
-        "headers": cors_headers,
+        "headers": CORS_HEADERS,
         "body": json.dumps(overall)
     }
