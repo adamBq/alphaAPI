@@ -4,6 +4,7 @@ from requests.exceptions import HTTPError
 import json
 import boto3
 import urllib.parse
+from decimal import Decimal
 from haversine import haversine, Unit
 
 API_KEY = "AIzaSyDcgohncbfmx_hw2MzwMTIe8jRqFRtgQ5c"
@@ -18,9 +19,19 @@ logger = logging.getLogger()
 logger.setLevel("INFO")
 
 dynamodb = boto3.resource('dynamodb')
+table = dynamodb.Table('scores')
 
 def family_score(suburb):
+    response = table.get_item(
+        Key={"suburb": suburb},
+    )
+    item = response.get("Item")
 
+    if item and "familyScore" in item:
+            score = float(item["familyScore"])
+            logger.info(f"Found family score: {score}")
+            return score
+    
     url = 'https://m42dj4mgj8.execute-api.ap-southeast-2.amazonaws.com/prod/family/' + suburb
 
     try:
@@ -42,11 +53,33 @@ def family_score(suburb):
 
     score = 10 * family_percent / 0.5
 
+    if not item:
+        table.put_item(Item={
+            "suburb": suburb,
+            "familyScore": Decimal(str(score))
+        })
+    elif item.get("familyScore") is None:
+        table.update_item(
+            Key={"suburb": suburb},
+            UpdateExpression='SET familyScore = :score',
+            ExpressionAttributeValues={":score": Decimal(str(score))}
+        )
+
     logger.info(f"Calculated family score: {score}")
     return score
 
 
 def crime_score(suburb):
+    response = table.get_item(
+        Key={"suburb": suburb},
+    )
+    item = response.get("Item")
+
+    if item and "crimeScore" in item:
+            score = float(item["crimeScore"])
+            logger.info(f"Found crime score: {score}")
+            return score
+
     major_crimes = {
         "Homicide",
         "Assault",
@@ -118,11 +151,33 @@ def crime_score(suburb):
 
     score = 10 * ((-crime_ratio / 12.5) + 1)
 
+    if not item:
+        table.put_item(Item={
+            "suburb": suburb,
+            "crimeScore": Decimal(str(score))
+        })
+    elif item.get("crimeScore") is None:
+        table.update_item(
+            Key={"suburb": suburb},
+            UpdateExpression='SET crimeScore = :score',
+            ExpressionAttributeValues={":score": Decimal(str(score))}
+        )
+
     logger.info(f"Calculated crime score: {score}")
     return score
 
 
 def weather_score(suburb):
+    response = table.get_item(
+        Key={"suburb": suburb},
+    )
+    item = response.get("Item")
+
+    if item and "weatherScore" in item:
+            score = float(item["weatherScore"])
+            logger.info(f"Found weather score: {score}")
+            return score
+
     url = 'https://m42dj4mgj8.execute-api.ap-southeast-2.amazonaws.com/prod/data/weather/suburb'
 
     body = {
@@ -144,14 +199,25 @@ def weather_score(suburb):
         data = response.json()
 
     if data.get("requestedSuburbData", None) is None:
-        logger.info(f"Calculated weather score: 10")
-        return 10
-
-    weather_count = data["requestedSuburbData"]["occurrences"]
-    weather_count_max = data["highestSuburbData"]["occurrences"]
+        score = 10
+    else:
+        weather_count = data["requestedSuburbData"]["occurrences"]
+        weather_count_max = data["highestSuburbData"]["occurrences"]
+        
+        score = (10 / (weather_count_max**2)) * \
+            (weather_count - weather_count_max)**2
     
-    score = (10 / (weather_count_max**2)) * \
-        (weather_count - weather_count_max)**2
+    if not item:
+        table.put_item(Item={
+            "suburb": suburb,
+            "weatherScore": Decimal(str(score))
+        })
+    elif not item.get("weatherScore", None):
+        table.update_item(
+            Key={"suburb": suburb},
+            UpdateExpression='SET weatherScore = :score',
+            ExpressionAttributeValues={":score": Decimal(str(score))}
+        )
 
     logger.info(f"Calculated weather score: {score}")
     return score
@@ -321,10 +387,10 @@ def handler(event, context):
                   0]["address_components"] if "locality" in component["types"]), None)
 
     scores = {
-        "transport": transport_score(data),
+        "family": family_score(suburb),
         "crime": crime_score(suburb),
         "weather": weather_score(suburb),
-        "family": family_score(suburb),
+        "transport": transport_score(data),
     }
 
     logger.info("Checking all scores are valid")
