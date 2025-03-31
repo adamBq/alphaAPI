@@ -7,7 +7,7 @@ from unittest.mock import patch, MagicMock
 import boto3
 from moto import mock_aws  # Use mock_aws instead of mock_s3
 
-from collector import lambda_handler
+from weather.weather_data_collector.collector import lambda_handler
 
 
 @pytest.fixture
