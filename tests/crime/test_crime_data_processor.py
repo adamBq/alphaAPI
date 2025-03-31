@@ -1,4 +1,4 @@
-from crime_data_processor.crime_data_processor import lambda_handler, fetch_suburb_data, process_and_store_crime_data, send_to_dlq
+from Crime.crime_data_processor.crime_data_processor import lambda_handler, fetch_suburb_data, process_and_store_crime_data, send_to_dlq
 import sys
 import os
 import json
@@ -18,11 +18,13 @@ sys.path.insert(
 def mock_crime_data():
     """ Returns a mock pandas DataFrame representing crime data. """
     return pd.DataFrame({
-        "Suburb": ["Sydney", "Melbourne"],
-        "Offence Category": ["Homicide", "Assault"],
-        "Subcategory": ["Murder", "Domestic"],
-        "Jan 2022": [2, 5],
-        "Feb 2022": [1, 4]
+        "Suburb": ["Sydney"] * 2,
+        "Offence category": ["Homicide", "Homicide"],
+        "Subcategory": ["Murder", "Murder"],
+        "Jan 2021": [1, 2],
+        "Feb 2021": [0, 1],
+        "Jan 2022": [2, 3],
+        "Feb 2022": [1, 2]
     })
 
 
@@ -34,7 +36,7 @@ def test_lambda_handler_success(monkeypatch, mock_crime_data):
         return mock_crime_data if suburb == "Sydney" else None
 
     monkeypatch.setattr(
-        "crime_data_processor.crime_data_processor.fetch_suburb_data",
+        "Crime.crime_data_processor.crime_data_processor.fetch_suburb_data",
         mock_fetch_suburb_data)
 
     # Mock DynamoDB put_item
@@ -43,7 +45,7 @@ def test_lambda_handler_success(monkeypatch, mock_crime_data):
             print(f"Mock DynamoDB Store: {Item}")
 
     monkeypatch.setattr(
-        "crime_data_processor.crime_data_processor.table",
+        "Crime.crime_data_processor.crime_data_processor.table",
         MockDynamoDBTable())
 
     event = {"Records": [{"body": json.dumps({"suburbs": ["Sydney"]})}]}
@@ -61,7 +63,7 @@ def test_lambda_handler_s3_fetch_failure(monkeypatch, capsys):
         return None  # Simulate S3 fetch failure
 
     monkeypatch.setattr(
-        "crime_data_processor.crime_data_processor.fetch_suburb_data",
+        "Crime.crime_data_processor.crime_data_processor.fetch_suburb_data",
         mock_fetch_suburb_data)
 
     # Mock send_to_dlq() to track failures
@@ -71,7 +73,7 @@ def test_lambda_handler_s3_fetch_failure(monkeypatch, capsys):
         failed_suburbs.append(suburb)
 
     monkeypatch.setattr(
-        "crime_data_processor.crime_data_processor.send_to_dlq",
+        "Crime.crime_data_processor.crime_data_processor.send_to_dlq",
         mock_send_to_dlq)
 
     event = {"Records": [{"body": json.dumps({"suburbs": ["Sydney"]})}]}
@@ -90,7 +92,7 @@ def test_lambda_handler_processing_failure(monkeypatch, mock_crime_data):
         return mock_crime_data
 
     monkeypatch.setattr(
-        "crime_data_processor.crime_data_processor.fetch_suburb_data",
+        "Crime.crime_data_processor.crime_data_processor.fetch_suburb_data",
         mock_fetch_suburb_data)
 
     # Simulate an error in processing
@@ -98,7 +100,7 @@ def test_lambda_handler_processing_failure(monkeypatch, mock_crime_data):
         raise Exception("Processing error")
 
     monkeypatch.setattr(
-        "crime_data_processor.crime_data_processor.process_and_store_crime_data",
+        "Crime.crime_data_processor.crime_data_processor.process_and_store_crime_data",
         mock_process_and_store_crime_data)
 
     # Track DLQ messages
@@ -108,7 +110,7 @@ def test_lambda_handler_processing_failure(monkeypatch, mock_crime_data):
         failed_suburbs.append(suburb)
 
     monkeypatch.setattr(
-        "crime_data_processor.crime_data_processor.send_to_dlq",
+        "Crime.crime_data_processor.crime_data_processor.send_to_dlq",
         mock_send_to_dlq)
 
     event = {"Records": [{"body": json.dumps({"suburbs": ["Sydney"]})}]}
@@ -125,7 +127,7 @@ def test_lambda_handler_dlq_failure(monkeypatch, mock_crime_data):
         return mock_crime_data
 
     monkeypatch.setattr(
-        "crime_data_processor.crime_data_processor.fetch_suburb_data",
+        "Crime.crime_data_processor.crime_data_processor.fetch_suburb_data",
         mock_fetch_suburb_data)
 
     # Simulate processing failure
@@ -133,7 +135,7 @@ def test_lambda_handler_dlq_failure(monkeypatch, mock_crime_data):
         return None  # Simulate failure
 
     monkeypatch.setattr(
-        "crime_data_processor.crime_data_processor.process_and_store_crime_data",
+        "Crime.crime_data_processor.crime_data_processor.process_and_store_crime_data",
         mock_process_and_store_crime_data)
 
     event = {"Records": [{"body": json.dumps({"suburbs": ["Sydney"]})}]}

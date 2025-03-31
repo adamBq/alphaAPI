@@ -1,0 +1,9 @@
+requests
+beautifulsoup4
+boto3
+pytest
+moto
+pandas
+numpy
+haversine
+pytest-cov

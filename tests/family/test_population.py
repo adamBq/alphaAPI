@@ -1,4 +1,5 @@
-from population.population import get_suburb_population, lambda_handler, S3_BUCKET_NAME, S3_CSV_KEY, S3_CODES_KEY
+import family.population.population as population
+from family.population.population import get_suburb_population, lambda_handler, S3_BUCKET_NAME, S3_CSV_KEY, S3_CODES_KEY
 import json
 import pytest
 import boto3
@@ -22,7 +23,7 @@ sys.path.insert(
 
 
 @pytest.fixture
-def s3_setup():
+def s3_setup(monkeypatch):
     """
     Sets up a mocked S3 environment with a test bucket and uploads dummy files for:
       - suburb_codes.py containing a SUBURB_CODES_MAP,
@@ -31,6 +32,8 @@ def s3_setup():
     with mock_aws():
         s3 = boto3.client("s3", region_name="us-east-1")
         s3.create_bucket(Bucket=S3_BUCKET_NAME)
+
+        monkeypatch.setattr(population, "s3_client", s3)
 
         # Dummy suburb_codes.py content: mapping code '001' to "TestSuburb"
         codes_content = "SUBURB_CODES_MAP = {'001': 'TestSuburb'}"
@@ -132,7 +135,7 @@ def test_get_suburb_population_no_csv_data(
             return {"Body": BytesIO(codes_content.encode("utf-8"))}
 
     monkeypatch.setattr(
-        "population.population.s3_client.get_object",
+        "family.population.population.s3_client.get_object",
         fake_get_object)
     result_json = get_suburb_population("TestSuburb")
     result = json.loads(result_json)
@@ -195,7 +198,7 @@ def test_lambda_handler_exception(monkeypatch, set_env_vars):
     def faulty_get_suburb_population(suburb_name, *args, **kwargs):
         raise Exception("Test exception")
     monkeypatch.setattr(
-        "population.population.get_suburb_population",
+        "family.population.population.get_suburb_population",
         faulty_get_suburb_population)
 
     event = {"pathParameters": {"suburb": "TestSuburb"}}
