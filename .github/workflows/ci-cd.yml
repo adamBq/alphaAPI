@@ -17,7 +17,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v3
         with:
-          python-version: '3.12'  # Update as needed
+          python-version: "3.12" # Update as needed
 
       - name: Install dependencies
         run: |
@@ -50,11 +50,6 @@ jobs:
 
       - name: Run tests if tests folder exists
         run: |
-          # Look for directories named 'tests' (one level deep) and run pytest in each.
-          # for test_dir in $(find . -maxdepth 2 -type d -name "tests"); do
-          #   echo "Running tests in $test_dir"
-          #   pytest "$test_dir"
-          # done
+          chmod +x ./runtests.sh
+          ./runtests.sh
           echo "All tests passed"
-
-

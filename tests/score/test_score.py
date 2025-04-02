@@ -1,8 +1,9 @@
-from main import family_score, crime_score, weather_score, transport_score, handler
+from score.livability_score.main import family_score, crime_score, weather_score, transport_score, handler
 import pytest
 import requests
 import sys
 import os
+import json
 from unittest.mock import patch, MagicMock
 
 sys.path.insert(
@@ -13,7 +14,7 @@ sys.path.insert(
             "..")))
 
 
-@patch('main.requests.get')
+@patch('score.livability_score.main.requests.get')
 def test_family_score(mock_requests_get):
     mock_response = MagicMock()
     mock_response.status_code = 200
@@ -27,7 +28,7 @@ def test_family_score(mock_requests_get):
     assert family_score("TestSuburb") == pytest.approx(10.0)
 
 
-@patch('main.requests.get')
+@patch('score.livability_score.main.requests.get')
 def test_crime_score(mock_requests_get):
     mock_crime_response = MagicMock()
     mock_crime_response.status_code = 200
@@ -55,7 +56,7 @@ def test_crime_score(mock_requests_get):
     assert crime_score("TestSuburb") == pytest.approx(10 * ((- 3 / 12.5) + 1))
 
 
-@patch('main.requests.post')
+@patch('score.livability_score.main.requests.post')
 def test_weather_score(mock_requests_post):
     mock_response = MagicMock()
     mock_response.status_code = 200
@@ -63,11 +64,11 @@ def test_weather_score(mock_requests_post):
         "body": "{\"requestedSuburbData\": {\"occurrences\": 5}, \"highestSuburbData\": {\"occurrences\": 10}}"}
     mock_requests_post.return_value = mock_response
 
-    assert isinstance(weather_score("TestSuburb"), float)
+    assert isinstance(weather_score("TestSuburb"), (int, float))
 
 
-@patch('main.requests.get')
-@patch('main.requests.post')
+@patch('score.livability_score.main.requests.get')
+@patch('score.livability_score.main.requests.post')
 def test_transport_score(mock_requests_post, mock_requests_get):
     mock_geo_response = MagicMock()
     mock_geo_response.status_code = 200
@@ -86,16 +87,22 @@ def test_transport_score(mock_requests_post, mock_requests_get):
         {"location": {"latitude": -33.86785, "longitude": 151.20732}}]}
     mock_requests_post.side_effect = [mock_bus_response, mock_train_response]
 
-    score = transport_score("Test Address")
+    score = transport_score({
+        "results":[
+            {
+            "geometry": {"location": {"lat": -33.86785, "lng": 151.20732}}
+            }
+        ]
+    })
 
     assert 0.0 <= score <= 10.0
 
 
-@patch('main.requests.get')
-@patch('main.transport_score')
-@patch('main.crime_score')
-@patch('main.weather_score')
-@patch('main.family_score')
+@patch('score.livability_score.main.requests.get')
+@patch('score.livability_score.main.transport_score')
+@patch('score.livability_score.main.crime_score')
+@patch('score.livability_score.main.weather_score')
+@patch('score.livability_score.main.family_score')
 def test_handler(
         mock_family,
         mock_weather,
@@ -117,26 +124,31 @@ def test_handler(
     mock_transport.return_value = 8.0
 
     event = {
-        "address": "Test Address",
-        "weights": {
-            "publicTransportation": 0.3,
-            "crime": 0.3,
-            "weather": 0.2,
-            "familyDemographics": 0.2}}
+        "body" : json.dumps({
+            "address": "Test Address",
+            "weights": {
+                "publicTransportation": 0.3,
+                "crime": 0.3,
+                "weather": 0.2,
+                "familyDemographics": 0.2}
+        })
+    }
 
     response = handler(event, None)
 
+    parsed_body = json.loads(response["body"])
+
     assert response["statusCode"] == 200
-    assert response["body"]["overallScore"] == (
+    assert parsed_body["overallScore"] == (
         0.3 * 8.0) + (0.3 * 5.0) + (0.2 * 6) + (0.2 * 7.0)
-    assert "breakdown" in response["body"]
+    assert "breakdown" in parsed_body
 
 
-@patch('main.requests.get')
-@patch('main.transport_score')
-@patch('main.crime_score')
-@patch('main.weather_score')
-@patch('main.family_score')
+@patch('score.livability_score.main.requests.get')
+@patch('score.livability_score.main.transport_score')
+@patch('score.livability_score.main.crime_score')
+@patch('score.livability_score.main.weather_score')
+@patch('score.livability_score.main.family_score')
 def test_handler_fail(
         mock_family,
         mock_weather,
@@ -158,12 +170,14 @@ def test_handler_fail(
     mock_transport.return_value = None
 
     event = {
-        "address": "Test Address",
-        "weights": {
-            "publicTransportation": 0.3,
-            "crime": 0.3,
-            "weather": 0.2,
-            "familyDemographics": 0.2}}
+        "body": json.dumps({
+            "address": "Test Address",
+            "weights": {
+                "publicTransportation": 0.3,
+                "crime": 0.3,
+                "weather": 0.2,
+                "familyDemographics": 0.2}
+        })}
 
     response = handler(event, None)
 
