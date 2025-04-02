@@ -28,7 +28,8 @@ aws ecr get-login-password --region ${REGION} | docker login --username AWS --pa
 # Loop through each subdirectory (each representing a Lambda function)
 for dir in */ ; do
     if [ -f "${dir}/Dockerfile" ]; then
-        FUNCTION_NAME=$(basename "$dir")
+        SERVICE_NAME=$(basename "$dir")
+        FUNCTION_NAME="${SERVICE_NAME}_${ENV}"
         echo "----------------------------------------"
         echo "Processing function: ${FUNCTION_NAME}"
         
