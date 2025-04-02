@@ -1,4 +1,5 @@
 import boto3
+import os
 import requests
 from requests.exceptions import HTTPError
 
@@ -6,7 +7,7 @@ API_ENDPOINT = 'https://m42dj4mgj8.execute-api.ap-southeast-2.amazonaws.com/prod
 SNS_ARN = 'arn:aws:sns:ap-southeast-2:522814692697:alphaAPI_Topic'
 HEADERS = {
         "Content-Type": "application/json",
-        "x-api-key": "EBb5OHc2US6L4bGG5ZJna6m4FFs3fgJnaTNZREfu"
+        "x-api-key": os.environ(["AWS_API_KEY"])
     }
 sns = boto3.client('sns')
 

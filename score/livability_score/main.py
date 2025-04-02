@@ -2,6 +2,7 @@ import logging
 import requests
 from requests.exceptions import HTTPError
 import json
+import os
 import boto3
 import urllib.parse
 from decimal import Decimal
@@ -9,7 +10,7 @@ from haversine import haversine, Unit
 
 GOOGLE_API_KEY = "AIzaSyDcgohncbfmx_hw2MzwMTIe8jRqFRtgQ5c"
 HEADERS = {
-    "x-api-key": "EBb5OHc2US6L4bGG5ZJna6m4FFs3fgJnaTNZREfu"
+    "x-api-key": os.environ(["AWS_API_KEY"])
 }
 CORS_HEADERS = {
     "Access-Control-Allow-Origin": "*",
