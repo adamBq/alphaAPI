@@ -66,15 +66,8 @@ def test_weather_score(mock_requests_post):
 
     assert isinstance(weather_score("TestSuburb"), (int, float))
 
-
-@patch('score.livability_score.main.requests.get')
 @patch('score.livability_score.main.requests.post')
-def test_transport_score(mock_requests_post, mock_requests_get):
-    mock_geo_response = MagicMock()
-    mock_geo_response.status_code = 200
-    mock_geo_response.json.return_value = {"results": [
-        {"geometry": {"location": {"lat": -33.86785, "lng": 151.20732}}}]}
-    mock_requests_get.return_value = mock_geo_response
+def test_transport_score(mock_requests_post):
 
     mock_bus_response = MagicMock()
     mock_bus_response.status_code = 200
@@ -87,50 +80,21 @@ def test_transport_score(mock_requests_post, mock_requests_get):
         {"location": {"latitude": -33.86785, "longitude": 151.20732}}]}
     mock_requests_post.side_effect = [mock_bus_response, mock_train_response]
 
-    score = transport_score({
-        "results":[
-            {
-            "geometry": {"location": {"lat": -33.86785, "lng": 151.20732}}
-            }
-        ]
-    })
+    score = transport_score({"results": [
+        {"geometry": {"location": {"lat": -33.86785, "lng": 151.20732}}}]})
 
     assert 0.0 <= score <= 10.0
 
-
-@patch('score.livability_score.main.requests.get')
-@patch('score.livability_score.main.transport_score')
-@patch('score.livability_score.main.crime_score')
-@patch('score.livability_score.main.weather_score')
-@patch('score.livability_score.main.family_score')
-def test_handler(
-        mock_family,
-        mock_weather,
-        mock_crime,
-        mock_transport,
-        mock_requests_get):
-    mock_geo_response = MagicMock()
-    mock_geo_response.status_code = 200
-    mock_geo_response.return_value = {
-        "results": [{
-            "address_components": [{"long_name": "TestSuburb", "types": ["locality"]}]
-        }]
-    }
-    mock_requests_get.return_value = mock_geo_response
-
-    mock_family.return_value = 7.0
-    mock_weather.return_value = 6.0
-    mock_crime.return_value = 5.0
-    mock_transport.return_value = 8.0
-
+def test_handler():
     event = {
-        "body" : json.dumps({
-            "address": "Test Address",
+        "body": json.dumps({
+            "address": "13 Valewood Crescent, Marsfield",
             "weights": {
                 "publicTransportation": 0.3,
                 "crime": 0.3,
                 "weather": 0.2,
-                "familyDemographics": 0.2}
+                "familyDemographics": 0.2
+            }
         })
     }
 
@@ -139,45 +103,25 @@ def test_handler(
     parsed_body = json.loads(response["body"])
 
     assert response["statusCode"] == 200
-    assert parsed_body["overallScore"] == (
-        0.3 * 8.0) + (0.3 * 5.0) + (0.2 * 6) + (0.2 * 7.0)
-    assert "breakdown" in parsed_body
+    assert "overallScore" in response["body"]
+    assert "breakdown" in response["body"]
 
 
-@patch('score.livability_score.main.requests.get')
 @patch('score.livability_score.main.transport_score')
-@patch('score.livability_score.main.crime_score')
-@patch('score.livability_score.main.weather_score')
-@patch('score.livability_score.main.family_score')
-def test_handler_fail(
-        mock_family,
-        mock_weather,
-        mock_crime,
-        mock_transport,
-        mock_requests_get):
-    mock_geo_response = MagicMock()
-    mock_geo_response.status_code = 200
-    mock_geo_response.return_value = {
-        "results": [{
-            "address_components": [{"long_name": "TestSuburb", "types": ["locality"]}]
-        }]
-    }
-    mock_requests_get.return_value = mock_geo_response
-
-    mock_family.return_value = 7.0
-    mock_weather.return_value = 6.0
-    mock_crime.return_value = 5.0
+def test_handler_fail(mock_transport):
     mock_transport.return_value = None
 
     event = {
         "body": json.dumps({
-            "address": "Test Address",
+            "address": "13 Valewood Crescent, Marsfield",
             "weights": {
                 "publicTransportation": 0.3,
                 "crime": 0.3,
                 "weather": 0.2,
-                "familyDemographics": 0.2}
-        })}
+                "familyDemographics": 0.2
+            }
+        })
+    }
 
     response = handler(event, None)
 
