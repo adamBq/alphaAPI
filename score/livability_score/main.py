@@ -6,7 +6,10 @@ import boto3
 import urllib.parse
 from haversine import haversine, Unit
 
-API_KEY = "AIzaSyDcgohncbfmx_hw2MzwMTIe8jRqFRtgQ5c"
+GOOGLE_API_KEY = "AIzaSyDcgohncbfmx_hw2MzwMTIe8jRqFRtgQ5c"
+HEADERS = {
+    "x-api-key": "EBb5OHc2US6L4bGG5ZJna6m4FFs3fgJnaTNZREfu"
+}
 
 logger = logging.getLogger()
 logger.setLevel("INFO")
@@ -18,7 +21,7 @@ def family_score(suburb):
     url = 'https://m42dj4mgj8.execute-api.ap-southeast-2.amazonaws.com/prod/family/' + suburb
 
     try:
-        response = requests.get(url)
+        response = requests.get(url, headers=HEADERS)
         response.raise_for_status()
     except HTTPError as e:
         logger.exception(e)
@@ -72,7 +75,7 @@ def crime_score(suburb):
     url = "https://m42dj4mgj8.execute-api.ap-southeast-2.amazonaws.com/prod/crime/" + urllib.parse.quote(suburb)
 
     try:
-        response = requests.get(url)
+        response = requests.get(url, headers=HEADERS)
         response.raise_for_status()
     except HTTPError as e:
         logger.exception(e)
@@ -95,7 +98,7 @@ def crime_score(suburb):
     url = 'https://m42dj4mgj8.execute-api.ap-southeast-2.amazonaws.com/prod/family/population/' + urllib.parse.quote(suburb)
 
     try:
-        response = requests.get(url)
+        response = requests.get(url, headers=HEADERS)
         response.raise_for_status()
     except HTTPError as e:
         logger.exception(e)
@@ -125,7 +128,7 @@ def weather_score(suburb):
     }
 
     try:
-        response = requests.post(url, json=body)
+        response = requests.post(url, json=body, headers=HEADERS)
         response.raise_for_status()
     except HTTPError as e:
         logger.exception(e)
@@ -161,7 +164,7 @@ def transport_score(data):
 
     headers = {
         "Content-Type": "application/json",
-        "X-Goog-Api-Key": API_KEY,
+        "X-Goog-Api-Key": GOOGLE_API_KEY,
         "X-Goog-FieldMask": 'places.location,places.displayName'
     }
 
@@ -296,7 +299,7 @@ def handler(event, context):
             value in weights.items()}
 
     url = "https://maps.googleapis.com/maps/api/geocode/json?address=" + \
-        urllib.parse.quote(address) + "&key=" + API_KEY
+        urllib.parse.quote(address) + "&key=" + GOOGLE_API_KEY
 
     try:
         logger.info(f"Fetching geocode for address: {address}")

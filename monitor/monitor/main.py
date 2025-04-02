@@ -6,6 +6,7 @@ API_ENDPOINT = 'https://m42dj4mgj8.execute-api.ap-southeast-2.amazonaws.com/prod
 SNS_ARN = 'arn:aws:sns:ap-southeast-2:522814692697:alphaAPI_Topic'
 HEADERS = {
         "Content-Type": "application/json",
+        "x-api-key": "EBb5OHc2US6L4bGG5ZJna6m4FFs3fgJnaTNZREfu"
     }
 sns = boto3.client('sns')
 
@@ -20,14 +21,14 @@ def check_api(api, body=None, headers=None):
     url = API_ENDPOINT + api
 
     try:
-        if not body or not headers:
-            response = requests.get(url)
+        if not body:
+            response = requests.get(url, headers=HEADERS)
         else:
             response = requests.post(url, json=body, headers=headers)
         response.raise_for_status()
 
     except (Exception, HTTPError) as e:
-        message=f"Failed to call '{API_ENDPOINT + api}': {str(e)}"
+        message=f"{str(e)}"
         send_notification('Alpha API Health Check Failed', message)
         return False
     else:
@@ -37,10 +38,10 @@ def handler(event, context):
     success = True
 
     
-    if not check_api('family/North%20Ryde'):
+    if not check_api('family/North%20Ryde', headers=HEADERS):
         success = False
 
-    if not check_api('crime/North%20Ryde'):
+    if not check_api('crime/North%20Ryde', headers=HEADERS):
         success = False
 
     weather_body = {
