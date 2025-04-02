@@ -37,19 +37,18 @@ jobs:
         run: |
           pylint --fail-under=5 $(git ls-files '*.py')
 
-      - name: Run deploy.sh scripts in each folder
-        run: |
-          # Find deploy.sh files at most one level deep and execute them.
-          for file in $(find . -maxdepth 2 -type f -name "deploy.sh"); do
-            echo "Running $file"
-            chmod +x "$file"
-            pushd "$(dirname "$file")"
-            bash deploy.sh
-            popd
-          done
-
-      - name: Run tests if tests folder exists
+      - name: Run tests
         run: |
           chmod +x ./runtests.sh
           ./runtests.sh
-          echo "All tests passed"
+
+      - name: Deploy to test environment
+        run: |
+          chmod +x ./deploy.sh
+          ./deploy.sh test
+
+      - name: Deploy to dev environment
+        if: ${{ success() }}
+        run: |
+          chmod +x ./deploy.sh
+          ./deploy.sh dev

@@ -1,6 +1,21 @@
 #!/bin/bash
 set -e
 
+# Check env input
+if [ -z "$1" ]; then
+    echo "Usage ./deploy.sh [test|dev|prod]"
+    exit 1
+fi
+
+ENV=$1
+
+# Validate env input
+if [[ ${ENV} != "test" && ${ENV} != "dev" && ${ENV} != "prod" ]]; then
+    echo "Invalid environment: '${ENV}'"
+    echo "Usage ./deploy.sh [test|dev|prod]"
+    exit 1
+fi
+
 # Configuration variables
 ACCOUNT_ID="522814692697"
 REGION="ap-southeast-2"
@@ -14,7 +29,8 @@ aws ecr get-login-password --region ${REGION} | docker login --username AWS --pa
 # Loop through each subdirectory (each representing a Lambda function)
 for dir in */ ; do
     if [ -f "${dir}/Dockerfile" ]; then
-        FUNCTION_NAME=$(basename "$dir")
+        SERVICE_NAME=(basename "$dir")
+        FUNCTION_NAME="${SERVICE_NAME}_${ENV}"
         echo "----------------------------------------"
         echo "Processing function: ${FUNCTION_NAME}"
         

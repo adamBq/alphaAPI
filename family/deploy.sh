@@ -1,6 +1,20 @@
 #!/bin/bash
 set -e
 
+if [ -z "$1" ]; then
+    echo "Usage ./deploy.sh [test|dev|prod]"
+    exit 1
+fi
+
+ENV=$1
+
+# Validate env input
+if [[ ${ENV} != "test" && ${ENV} != "dev" && ${ENV} != "prod" ]]; then
+    echo "Invalid environment: '${ENV}'"
+    echo "Usage ./deploy.sh [test|dev|prod]"
+    exit 1
+fi
+
 # Configuration variables
 ACCOUNT_ID="522814692697"
 REGION="ap-southeast-2"
