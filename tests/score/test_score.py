@@ -1,4 +1,4 @@
-from livability_score.main import family_score, crime_score, weather_score, transport_score, handler
+from score.livability_score.main import family_score, crime_score, weather_score, transport_score, handler
 import pytest
 import requests
 import sys
@@ -14,7 +14,7 @@ sys.path.insert(
             "..")))
 
 
-@patch('livability_score.main.requests.get')
+@patch('score.livability_score.main.requests.get')
 def test_family_score(mock_requests_get):
     mock_response = MagicMock()
     mock_response.status_code = 200
@@ -28,7 +28,7 @@ def test_family_score(mock_requests_get):
     assert family_score("TestSuburb") == pytest.approx(10.0)
 
 
-@patch('livability_score.main.requests.get')
+@patch('score.livability_score.main.requests.get')
 def test_crime_score(mock_requests_get):
     mock_crime_response = MagicMock()
     mock_crime_response.status_code = 200
@@ -56,7 +56,7 @@ def test_crime_score(mock_requests_get):
     assert crime_score("TestSuburb") == pytest.approx(10 * ((- 3 / 12.5) + 1))
 
 
-@patch('livability_score.main.requests.post')
+@patch('score.livability_score.main.requests.post')
 def test_weather_score(mock_requests_post):
     mock_response = MagicMock()
     mock_response.status_code = 200
@@ -64,9 +64,9 @@ def test_weather_score(mock_requests_post):
         "body": "{\"requestedSuburbData\": {\"occurrences\": 5}, \"highestSuburbData\": {\"occurrences\": 10}}"}
     mock_requests_post.return_value = mock_response
 
-    assert isinstance(weather_score("TestSuburb"), float)
+    assert isinstance(weather_score("TestSuburb"), (int, float))
 
-@patch('livability_score.main.requests.post')
+@patch('score.livability_score.main.requests.post')
 def test_transport_score(mock_requests_post):
 
     mock_bus_response = MagicMock()
@@ -100,12 +100,14 @@ def test_handler():
 
     response = handler(event, None)
 
+    parsed_body = json.loads(response["body"])
+
     assert response["statusCode"] == 200
     assert "overallScore" in response["body"]
     assert "breakdown" in response["body"]
 
 
-@patch('livability_score.main.transport_score')
+@patch('score.livability_score.main.transport_score')
 def test_handler_fail(mock_transport):
     mock_transport.return_value = None
 

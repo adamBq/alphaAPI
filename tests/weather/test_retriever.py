@@ -4,8 +4,7 @@ import pytest
 import boto3
 from moto import mock_aws  # Use mock_aws instead of mock_s3
 
-from retriever import lambda_handler
-
+from weather.retriever.retriever import lambda_handler
 
 @pytest.fixture
 def s3_setup():

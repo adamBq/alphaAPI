@@ -12,4 +12,4 @@ COPY . .
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Set the Lambda function handler
-CMD ["lambda_function.lambda_handler"]
+CMD ["crime_data_api.lambda_handler"]

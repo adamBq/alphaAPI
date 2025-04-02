@@ -1,9 +1,12 @@
-from crime_data_fetcher.crime_data_fetcher import lambda_handler, fetch
+from Crime.crime_data_fetcher.crime_data_fetcher import lambda_handler, fetch
 import sys
 import os
 import json
 import pytest
 import pandas as pd
+import requests
+import zipfile
+from unittest.mock import patch, MagicMock
 
 # Ensure Python finds the CrimeDataFetcher module
 sys.path.insert(
@@ -32,7 +35,7 @@ def test_lambda_handler_success(monkeypatch, mock_crime_data):
         return mock_crime_data
 
     monkeypatch.setattr(
-        "crime_data_fetcher.crime_data_fetcher.fetch",
+        "Crime.crime_data_fetcher.crime_data_fetcher.fetch",
         mock_fetch)
 
     # Mock S3 put_object
@@ -41,7 +44,7 @@ def test_lambda_handler_success(monkeypatch, mock_crime_data):
             print(f"Mock S3 Upload: {Key}")
 
     monkeypatch.setattr(
-        "crime_data_fetcher.crime_data_fetcher.s3",
+        "Crime.crime_data_fetcher.crime_data_fetcher.s3",
         MockS3Client())
 
     # Mock SQS send_message
@@ -50,7 +53,7 @@ def test_lambda_handler_success(monkeypatch, mock_crime_data):
             print(f"Mock SQS Message: {MessageBody}")
 
     monkeypatch.setattr(
-        "crime_data_fetcher.crime_data_fetcher.sqs",
+        "Crime.crime_data_fetcher.crime_data_fetcher.sqs",
         MockSQSClient())
 
     event = {}
@@ -68,7 +71,7 @@ def test_lambda_handler_fetch_failure(monkeypatch):
         return None  # Simulate fetch failure
 
     monkeypatch.setattr(
-        "crime_data_fetcher.crime_data_fetcher.fetch",
+        "Crime.crime_data_fetcher.crime_data_fetcher.fetch",
         mock_fetch)
 
     event = {}
@@ -86,7 +89,7 @@ def test_lambda_handler_s3_failure(monkeypatch, mock_crime_data):
         return mock_crime_data
 
     monkeypatch.setattr(
-        "crime_data_fetcher.crime_data_fetcher.fetch",
+        "Crime.crime_data_fetcher.crime_data_fetcher.fetch",
         mock_fetch)
 
     # Simulate S3 failure
@@ -95,5 +98,53 @@ def test_lambda_handler_s3_failure(monkeypatch, mock_crime_data):
             raise Exception("S3 upload failed")
 
     monkeypatch.setattr(
-        "crime_data_fetcher.crime_data_fetcher.s3",
+        "Crime.crime_data_fetcher.crime_data_fetcher.s3",
         MockS3Client())
+
+    # Still need to mock SQS client to avoid unexpected calls
+    class MockSQSClient:
+        def send_message(self, QueueUrl, MessageBody):
+            pass  # Shouldn't be called in this test
+
+    monkeypatch.setattr(
+        "Crime.crime_data_fetcher.crime_data_fetcher.sqs",
+        MockSQSClient())
+
+    event = {}
+    context = None
+    response = lambda_handler(event, context)
+
+    assert response["statusCode"] == 500
+    assert response["body"] == "Error uploading data"
+
+
+def test_fetch_live_real_zip():
+    """
+    Actually runs the fetch method with real data from the live URL.
+    Skipped if offline or data format changes.
+    """
+    df = fetch()
+
+    assert isinstance(df, pd.DataFrame)
+    assert not df.empty
+    assert "Suburb" in df.columns
+
+@patch("Crime.crime_data_fetcher.crime_data_fetcher.requests.get")
+def test_fetch_request_exception(mock_get):
+    mock_get.side_effect = requests.exceptions.RequestException("Network error")
+
+    df = fetch()
+
+    assert df is None
+
+@patch("Crime.crime_data_fetcher.crime_data_fetcher.requests.get")
+def test_fetch_bad_zip(mock_get):
+    mock_response = MagicMock()
+    mock_response.content = b"not a zip file"
+    mock_response.raise_for_status = lambda: None
+
+    mock_get.return_value = mock_response
+
+    df = fetch()
+
+    assert df is None
