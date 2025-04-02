@@ -29,7 +29,7 @@ aws ecr get-login-password --region ${REGION} | docker login --username AWS --pa
 for dir in */ ; do
     if [ -f "${dir}/Dockerfile" ]; then
         SERVICE_NAME=$(basename "$dir")
-        FUNCTION_NAME="${SERVICE_NAME}_${ENV}"
+        FUNCTION_NAME="${ENV}_${SERVICE_NAME}"
         echo "----------------------------------------"
         echo "Processing function: ${FUNCTION_NAME}"
         
