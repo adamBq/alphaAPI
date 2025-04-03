@@ -1,21 +1,46 @@
 openapi: 3.0.0
 info:
   title: Extreme Weather Data API
-  description: Provides historical and real-time extreme weather data based on NSW natural disaster declarations.
+  description: |
+    Provides historical and real-time extreme weather data based on NSW natural disaster declarations.
+
+    ⚠️ **API Key Required:**  
+    All endpoints require an API key. Include it in your request header as shown below:
+
+    ```
+    x-api-key: YOUR_API_KEY
+    ```
+
+    🔗 **Base URL:**  
+    ```
+    https://m42dj4mgj8.execute-api.ap-southeast-2.amazonaws.com/prod
+    ```
+
   version: 1.0.0
+
 servers:
   - url: https://m42dj4mgj8.execute-api.ap-southeast-2.amazonaws.com/prod
     description: Production Server
 
 paths:
-
   /data/weather/suburb:
     post:
       summary: Retrieve extreme weather trends for a given suburb
-      description: >
+      description: |
         Returns disaster occurrence data and relevant natural disasters for the requested suburb.
+
+        ⚠️ Requires `x-api-key` header for authentication.
+
         The request body must include a JSON payload with a `suburb` key and an optional `includeHighest` flag.
       operationId: getSuburbData
+      parameters:
+        - name: x-api-key
+          in: header
+          required: true
+          description: API key required to access the endpoint
+          schema:
+            type: string
+            example: YOUR_API_KEY
       requestBody:
         required: true
         content:
@@ -29,7 +54,7 @@ paths:
                   example: "Sydney"
                 includeHighest:
                   type: boolean
-                  description: >
+                  description: |
                     If true, the response will also include the suburb with the highest number of disaster occurrences.
                   example: true
                   default: false
@@ -66,7 +91,7 @@ paths:
                           - "NSW severe weather and flooding 9 November 2021 onwards"
                   highestSuburbData:
                     type: object
-                    description: >
+                    description: |
                       (Optional) Data for the suburb with the highest number of occurrences, returned only if `includeHighest` is true.
                     properties:
                       suburb:

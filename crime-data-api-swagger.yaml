@@ -1,8 +1,23 @@
 openapi: 3.0.0
 info:
   title: NSW Crime Data API
-  description: Provides historical and recent crime data for NSW suburbs using statistics from the NSW BOCSAR open data website.
+  description: |
+    Provides historical and recent crime data for NSW suburbs using statistics from the NSW BOCSAR open data website.
+
+    ⚠️ **API Key Required:**  
+    To access any endpoint, include your API key in the request header using:
+    
+    ```
+    x-api-key: YOUR_API_KEY
+    ```
+
+    🔗 **Base URL:**  
+    ```
+    https://m42dj4mgj8.execute-api.ap-southeast-2.amazonaws.com/prod
+    ```
+
   version: 1.1.0
+
 servers:
   - url: https://m42dj4mgj8.execute-api.ap-southeast-2.amazonaws.com/prod
     description: Production Server
@@ -11,7 +26,10 @@ paths:
   /crime/{suburb}:
     get:
       summary: Retrieve crime statistics and trends for a given suburb
-      description: Returns crime statistics and historical trends for the requested suburb from the DynamoDB `CrimeData` table.
+      description: |
+        Returns crime statistics and historical trends for the requested suburb from the DynamoDB `CrimeData` table.
+
+        ⚠️ Requires `x-api-key` header for authentication.
       operationId: getCrimeBySuburb
       parameters:
         - name: suburb
@@ -28,6 +46,13 @@ paths:
           schema:
             type: boolean
             example: true
+        - name: x-api-key
+          in: header
+          required: true
+          description: API key required to access the endpoint
+          schema:
+            type: string
+            example: YOUR_API_KEY
       responses:
         "200":
           description: Crime statistics and trends for the requested suburb
