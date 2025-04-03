@@ -10,7 +10,7 @@ from haversine import haversine, Unit
 
 GOOGLE_API_KEY = "AIzaSyDcgohncbfmx_hw2MzwMTIe8jRqFRtgQ5c"
 HEADERS = {
-    "x-api-key": os.environ(["AWS_API_KEY"])
+    "x-api-key": os.environ.get("AWS_API_KEY")
 }
 CORS_HEADERS = {
     "Access-Control-Allow-Origin": "*",
