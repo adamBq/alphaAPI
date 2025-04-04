@@ -84,8 +84,8 @@ def get_income_data(
         result[f"{key} range"] = count
         weighted_total += count * midpoint
 
-    result["Partial_income_not_stated"] = income_not_stated
-    result["Total_population"] = total_population
+    result["partial_income_not_stated"] = income_not_stated
+    result["total_population"] = total_population
 
     if total_population > 0:
         avg_income = round(weighted_total / total_population)
