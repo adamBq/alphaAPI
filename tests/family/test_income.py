@@ -15,35 +15,33 @@ sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')
 # ---------------------------------------------------------------------
 
 @pytest.fixture
+@mock_aws
 def s3_setup(monkeypatch):
-    with mock_aws():
-        s3 = boto3.client("s3", region_name="us-east-1")
-        s3.create_bucket(Bucket=S3_BUCKET_NAME)
+    s3 = boto3.client("s3", region_name="us-east-1")
+    s3.create_bucket(Bucket=S3_BUCKET_NAME)
 
-        monkeypatch.setattr(income, "s3_client", s3)
+    monkeypatch.setattr(income, "s3_client", s3)
 
-        # Suburb codes mapping: 001 → TestSuburb
-        codes_content = "SUBURB_CODES_MAP = {'001': 'TestSuburb'}"
-        s3.put_object(
-            Bucket=S3_BUCKET_NAME,
-            Key=S3_CODES_KEY,
-            Body=codes_content.encode("utf-8")
-        )
+    codes_content = "SUBURB_CODES_MAP = {'001': 'TestSuburb'}"
+    s3.put_object(
+        Bucket=S3_BUCKET_NAME,
+        Key=S3_CODES_KEY,
+        Body=codes_content.encode("utf-8")
+    )
 
-        # Sample census CSV content
-        csv_content = (
-            "SAL_CODE_2021,P_Tot_Tot,P_PI_NS_Tot,P_650_799_Tot,P_800_999_Tot,"
-            "P_1000_1249_Tot,P_1250_1499_Tot,P_1500_1749_Tot,P_1750_1999_Tot,"
-            "P_2000_2999_Tot,P_3000_3499_Tot,P_3500_more_Tot\n"
-            "SAL001,1000,50,100,150,200,100,50,30,20,10,5\n"
-        )
-        s3.put_object(
-            Bucket=S3_BUCKET_NAME,
-            Key=S3_CSV_KEY,
-            Body=csv_content.encode("utf-8")
-        )
+    csv_content = (
+        "SAL_CODE_2021,P_Tot_Tot,P_PI_NS_Tot,P_650_799_Tot,P_800_999_Tot,"
+        "P_1000_1249_Tot,P_1250_1499_Tot,P_1500_1749_Tot,P_1750_1999_Tot,"
+        "P_2000_2999_Tot,P_3000_3499_Tot,P_3500_more_Tot\n"
+        "SAL001,1000,50,100,150,200,100,50,30,20,10,5\n"
+    )
+    s3.put_object(
+        Bucket=S3_BUCKET_NAME,
+        Key=S3_CSV_KEY,
+        Body=csv_content.encode("utf-8")
+    )
 
-        yield s3
+    yield s3
 
 @pytest.fixture
 def set_env_vars():
@@ -67,8 +65,8 @@ def test_get_income_data_success(s3_setup, set_env_vars):
     assert result["suburb_code"] == "SAL001"
     assert result["650_799 range"] == 100
     assert result["800_999 range"] == 150
-    assert result["Total_population"] == 1000
-    assert result["Partial_income_not_stated"] == 50
+    assert result["total_population"] == 1000
+    assert result["partial_income_not_stated"] == 50
     assert isinstance(result["average_income_range"], int)
 
 def test_get_income_data_invalid_suburb(s3_setup, set_env_vars):
@@ -78,11 +76,12 @@ def test_get_income_data_invalid_suburb(s3_setup, set_env_vars):
     assert "Suburb code not found" in result["error"]
 
 def test_get_income_data_no_data_match(s3_setup, set_env_vars):
+    s3 = s3_setup
     csv_data = (
         "SAL_CODE_2021,P_Tot_Tot\n"
         "SAL999,200\n"
     )
-    boto3.client("s3", region_name="us-east-1").put_object(
+    s3.put_object(
         Bucket=S3_BUCKET_NAME,
         Key=S3_CSV_KEY,
         Body=csv_data.encode("utf-8")
@@ -93,7 +92,7 @@ def test_get_income_data_no_data_match(s3_setup, set_env_vars):
     assert "No data found" in result["error"]
 
 def test_get_income_data_missing_code_map(s3_setup, set_env_vars):
-    s3 = boto3.client("s3", region_name="us-east-1")
+    s3 = s3_setup
     s3.put_object(
         Bucket=S3_BUCKET_NAME,
         Key=S3_CODES_KEY,
