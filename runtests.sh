@@ -12,4 +12,4 @@ fi
 pip install --quiet -r requirements.txt
     
 # Run tests using the venv's python
-python -m pytest --cov=. --cov-report=term-missing --cov-report=html -rw
+python -m pytest --cov=. --cov-report=xml --cov-report=html --junitxml=pytest-report.xml -rw
