@@ -64,6 +64,7 @@ def lambda_handler(event, context):
         if (suburb_encoded is not None):
             suburb = urllib.parse.unquote(suburb_encoded)
             
+        print(f"suburb: {suburb}")
         query_params = event.get("queryStringParameters", {})
         detailed = True
         if query_params:
