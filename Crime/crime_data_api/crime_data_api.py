@@ -2,6 +2,7 @@ import json
 import boto3
 import traceback
 import decimal
+import urllib.parse
 
 dynamodb = boto3.resource("dynamodb")
 table = dynamodb.Table("crime-data")
@@ -58,7 +59,12 @@ def lambda_handler(event, context):
     """
     try:
         print(json.dumps(event))
-        suburb = event["pathParameters"].get("suburb")
+        suburb_encoded = event["pathParameters"].get("suburb")
+        suburb = None
+        if (suburb_encoded is not None):
+            suburb = urllib.parse.unquote(suburb_encoded)
+            
+        print(f"suburb: {suburb}")
         query_params = event.get("queryStringParameters", {})
         detailed = True
         if query_params:
