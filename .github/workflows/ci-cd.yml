@@ -47,6 +47,12 @@ jobs:
           chmod +x ./runtests.sh
           ./runtests.sh
 
+      - name: Upload HTML coverage report
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-report
+          path: htmlcov/
+
       - name: Deploy to dev environment
         if: ${{ success() }}
         run: |
