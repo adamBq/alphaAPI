@@ -364,38 +364,50 @@ def handler(event, context):
             key: value /
             total_weights for key,
             value in weights.items()}
+        
+    suburb_only = body.get("suburbOnly", False)
 
-    url = "https://maps.googleapis.com/maps/api/geocode/json?address=" + \
-        urllib.parse.quote(address) + "&key=" + GOOGLE_API_KEY
+    if not suburb_only:
+        url = "https://maps.googleapis.com/maps/api/geocode/json?address=" + \
+            urllib.parse.quote(address) + "&key=" + GOOGLE_API_KEY
 
-    try:
-        logger.info(f"Fetching geocode for address: {address}")
-        response = requests.get(url)
-        response.raise_for_status()
-    except HTTPError as e:
-        logger.exception(e)
-        return None
-    except Exception as e:
-        print(e)
-        logger.exception(e)
-        return {
-            "statusCode": 400,
-            "headers": CORS_HEADERS,
-            "body": f"Invalid address: {e}"
+        try:
+            logger.info(f"Fetching geocode for address: {address}")
+            response = requests.get(url)
+            response.raise_for_status()
+        except HTTPError as e:
+            logger.exception(e)
+            return None
+        except Exception as e:
+            print(e)
+            logger.exception(e)
+            return {
+                "statusCode": 400,
+                "headers": CORS_HEADERS,
+                "body": f"Invalid address: {e}"
+            }
+        else:
+            logger.info(f"Retrieved geocode for address: {address}")
+            data = response.json()
+
+        suburb = next((component["long_name"] for component in data["results"][
+                    0]["address_components"] if "locality" in component["types"]), None)
+
+        scores = {
+            "family": family_score(suburb),
+            "crime": crime_score(suburb),
+            "weather": weather_score(suburb),
+            "transport": transport_score(data),
         }
+    
     else:
-        logger.info(f"Retrieved geocode for address: {address}")
-        data = response.json()
+        suburb = address
 
-    suburb = next((component["long_name"] for component in data["results"][
-                  0]["address_components"] if "locality" in component["types"]), None)
-
-    scores = {
-        "family": family_score(suburb),
-        "crime": crime_score(suburb),
-        "weather": weather_score(suburb),
-        "transport": transport_score(data),
-    }
+        scores = {
+            "family": family_score(suburb),
+            "crime": crime_score(suburb),
+            "weather": weather_score(suburb),
+        }
 
     logger.info("Checking all scores are valid")
     for key, value in scores.items():
@@ -408,12 +420,45 @@ def handler(event, context):
             }
     logger.info("All scores are valid")
 
-    overall = {
+
+
+    if not suburb_only:
+        overall = {
+                "overallScore": round(
+                    weights.get(
+                        "publicTransportation",
+                        0) *
+                    scores["transport"] +
+                    weights.get(
+                        "crime",
+                        0) *
+                    scores["crime"] +
+                    weights.get(
+                        "weather",
+                        0) *
+                    scores["weather"] +
+                    weights.get(
+                        "familyDemographics",
+                        0) *
+                    scores["family"],
+                    2),
+                "breakdown": {
+                    "crimeScore": round(
+                        scores["crime"],
+                        2),
+                    "transportScore": round(
+                        scores["transport"],
+                        2),
+                    "weatherScore": round(
+                        scores["weather"],
+                        2),
+                    "familyScore": round(
+                        scores["family"],
+                        2),
+            }}
+    else:
+        overall = {
             "overallScore": round(
-                weights.get(
-                    "publicTransportation",
-                    0) *
-                scores["transport"] +
                 weights.get(
                     "crime",
                     0) *
@@ -431,9 +476,6 @@ def handler(event, context):
                 "crimeScore": round(
                     scores["crime"],
                     2),
-                "transportScore": round(
-                    scores["transport"],
-                    2),
                 "weatherScore": round(
                     scores["weather"],
                     2),
@@ -449,3 +491,17 @@ def handler(event, context):
         "headers": CORS_HEADERS,
         "body": json.dumps(overall)
     }
+
+event = {
+    "body": json.dumps({
+        "address": "Marsfield",
+        "suburbOnly": True,
+        "weights": {
+            "crime": 1,
+            "weather": 1,
+            "familyDemographics": 1
+        }
+    })
+}
+
+print(handler(event, ''))
