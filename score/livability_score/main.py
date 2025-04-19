@@ -491,17 +491,3 @@ def handler(event, context):
         "headers": CORS_HEADERS,
         "body": json.dumps(overall)
     }
-
-event = {
-    "body": json.dumps({
-        "address": "Marsfield",
-        "suburbOnly": True,
-        "weights": {
-            "crime": 1,
-            "weather": 1,
-            "familyDemographics": 1
-        }
-    })
-}
-
-print(handler(event, ''))
